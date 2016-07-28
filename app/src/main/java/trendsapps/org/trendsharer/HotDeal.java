@@ -1,15 +1,26 @@
 package trendsapps.org.trendsharer;
 
 
+import android.util.Log;
 
 public class HotDeal {
+    private int ID;
     private String shop;
     private String discount;
     private String content = null;
     private int duration = 20;
     private boolean isPublishedByAnOwner = false;
 
-    public void HotDeal(String shopName, String discount){
+    public HotDeal(){
+
+    }
+    public HotDeal(int ID,String shopName, String discount){
+        this.ID = ID;
+        this.shop = shopName;
+        this.shop = discount;
+    }
+
+    public HotDeal(String shopName, String discount){
         this.shop = shopName;
         this.shop = discount;
     }
@@ -52,5 +63,12 @@ public class HotDeal {
 
     public boolean isPublishedByAnOwner(){
         return isPublishedByAnOwner;
+    }
+
+    public boolean isComplete(){
+        if (shop.length()>0 && discount.length()>0){
+            return true;
+        }
+        return false;
     }
 }
