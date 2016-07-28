@@ -2,4 +2,8 @@
     <string name="app_name">TrendSharer</string>
     <string name="action_settings">Settings</string>
     <string name="section_format">TredSharer Fragment: %1$d</string>
+    <string name="hint_shopName">Name of the shop</string>
+    <string name="hint_discount">Discount</string>
+    <string name="hint_content">What do you think about this deal?</string>
+    <string name="button_submit">Spread the word</string>
 </resources>
