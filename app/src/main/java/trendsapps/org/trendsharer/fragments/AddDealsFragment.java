@@ -78,12 +78,23 @@ public class AddDealsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_add_deals, container, false);
-        imageView = (ImageView) rootView.findViewById(R.id.imageView);
+        setImageView(rootView);
         addSubmitButton(rootView);
         addHideKeyBoardButton(rootView);
         addTakeASnapButton(rootView);
         hotDealsDataBase = new DatabaseHandler("TrendsSharer-private_database", "HotDeals", getActivity());
         return rootView;
+    }
+
+    private void setImageView(View view){
+        imageView = (ImageView) view.findViewById(R.id.imageView);
+        imageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                image = null;
+                imageView.setImageBitmap(BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher));
+            }
+        });
     }
 
     private void addSubmitButton(View view) {
@@ -215,7 +226,6 @@ public class AddDealsFragment extends Fragment {
                 try {
                     image = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), selectedImageUri);
                     imageView.setImageBitmap(image);
-                    Toast.makeText(getActivity(), "Image successfully loaded", Toast.LENGTH_SHORT).show();
                 } catch (IOException e) {
                     Toast.makeText(getActivity(), "Problem capturing the image", Toast.LENGTH_LONG).show();
                     e.printStackTrace();

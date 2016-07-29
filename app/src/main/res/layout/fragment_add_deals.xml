@@ -56,7 +56,8 @@
                 android:layout_row="0"
                 android:layout_column="7"
                 android:layout_gravity="top|left|bottom|center|right|fill"
-                android:src="@mipmap/ic_launcher" />
+                android:src="@mipmap/ic_launcher"
+                android:clickable="true" />
         </GridLayout>
 
         <android.support.design.widget.TextInputLayout
