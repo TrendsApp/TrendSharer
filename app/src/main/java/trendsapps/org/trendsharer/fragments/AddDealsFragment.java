@@ -49,7 +49,6 @@ public class AddDealsFragment extends Fragment {
     private Button submitDeal;
     private ImageButton hideKeyBoard;
     private ImageButton takeASnap;
-    private ImageView displayImage;
     private EditText shopName;
     private EditText discount;
     private EditText content;
@@ -98,7 +97,9 @@ public class AddDealsFragment extends Fragment {
                 newDeal.setShopName(shopName.getText().toString());
                 newDeal.setDiscount(discount.getText().toString());
                 newDeal.setContent(content.getText().toString());
-                newDeal.setImage(image);
+                if (image!= null){
+                    newDeal.setImage(image);
+                }
 
                 if (newDeal.isComplete()) {
                     try {
@@ -130,7 +131,6 @@ public class AddDealsFragment extends Fragment {
     }
 
     private void addTakeASnapButton(View view) {
-        displayImage = (ImageView) view.findViewById(R.id.image_viewer);
         takeASnap = (ImageButton) view.findViewById(R.id.btn_takeASnap);
         takeASnap.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -211,7 +211,7 @@ public class AddDealsFragment extends Fragment {
                 }
                 try {
                     image = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), selectedImageUri);
-                    displayImage.setImageBitmap(image);
+                    Toast.makeText(getActivity(), "Image successfully loaded", Toast.LENGTH_SHORT).show();
                 } catch (IOException e) {
                     Toast.makeText(getActivity(), "Problem capturing the image", Toast.LENGTH_LONG).show();
                     e.printStackTrace();
