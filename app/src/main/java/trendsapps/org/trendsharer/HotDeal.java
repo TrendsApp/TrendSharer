@@ -1,7 +1,11 @@
 package trendsapps.org.trendsharer;
 
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.util.Log;
+
+import java.io.ByteArrayOutputStream;
 
 public class HotDeal {
     private int ID;
@@ -10,6 +14,7 @@ public class HotDeal {
     private String content = null;
     private int duration = 20;
     private boolean isPublishedByAnOwner = false;
+    private byte[] image = null;
 
     public HotDeal(){
 
@@ -43,6 +48,20 @@ public class HotDeal {
 
     public void publishedByOwner(boolean isPublishedByAnOwner){
         this.isPublishedByAnOwner = isPublishedByAnOwner;
+    }
+
+    public void setImage(Bitmap bitmap){
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
+        image = baos.toByteArray();
+    }
+
+    public byte[] getImageAsByteArr(){
+        return image;
+    }
+
+    public Bitmap getImageAsBitMap(){
+        return BitmapFactory.decodeByteArray(image, 0, image.length);
     }
 
     public String getShopName(){
