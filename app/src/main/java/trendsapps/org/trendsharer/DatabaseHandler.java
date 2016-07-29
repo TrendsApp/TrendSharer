@@ -2,6 +2,7 @@ package trendsapps.org.trendsharer;
 
 
 import android.app.Activity;
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
@@ -10,6 +11,7 @@ public class DatabaseHandler {
 
     private SQLiteDatabase hotDealsDataBase;
     private String dealsTableName;
+    private ContentValues contentValues;
 
     public DatabaseHandler(SQLiteDatabase database){
       this.hotDealsDataBase = database;
@@ -24,13 +26,20 @@ public class DatabaseHandler {
         }
 
         dealsTableName = tableName;
-        String createTableQuery = "CREATE TABLE IF NOT EXISTS "+dealsTableName+"(ID integer primary key AUTOINCREMENT,Shop VARCHAR,Discount VARCHAR,Content VARCHAR,Duration INTEGER);";
+        String createTableQuery = "CREATE TABLE IF NOT EXISTS "+dealsTableName+"(ID integer primary key AUTOINCREMENT,Shop VARCHAR,Discount VARCHAR,Content VARCHAR,Duration INTEGER,Photo blob);";
         hotDealsDataBase.execSQL(createTableQuery);
     }
 
     public void addDeal(HotDeal newDeal){
-        String insertNewDealQuery = "INSERT INTO "+dealsTableName+"(Shop,Discount,Content,Duration) VALUES('"+newDeal.getShopName()+"','"+newDeal.getDiscount()+"','"+newDeal.getContent()+"',"+newDeal.getDuration()+");";
-        hotDealsDataBase.execSQL(insertNewDealQuery);
+        contentValues = new ContentValues();
+        contentValues.put("Shop",newDeal.getShopName());
+        contentValues.put("Discount",newDeal.getDiscount());
+        contentValues.put("Content",newDeal.getContent());
+        contentValues.put("Duration",newDeal.getDuration());
+        contentValues.put("Photo",newDeal.getImageAsByteArr());
+        hotDealsDataBase.insert(dealsTableName,null,contentValues);
+//        String insertNewDealQuery = "INSERT INTO "+dealsTableName+"(Shop,Discount,Content,Duration,Snap) VALUES('"+newDeal.getShopName()+"','"+newDeal.getDiscount()+"','"+newDeal.getContent()+"',"+newDeal.getDuration()+",'"+newDeal.getImageAsByteArr()+"');";
+//        hotDealsDataBase.execSQL(insertNewDealQuery);
     }
 
     public SQLiteDatabase getHotDealsDataBase(){

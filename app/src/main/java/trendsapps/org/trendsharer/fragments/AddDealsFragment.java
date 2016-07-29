@@ -1,11 +1,18 @@
 package trendsapps.org.trendsharer.fragments;
 
 
+import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -21,6 +28,9 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+
 import trendsapps.org.trendsharer.DatabaseHandler;
 import trendsapps.org.trendsharer.HotDeal;
 import trendsapps.org.trendsharer.R;
@@ -30,11 +40,14 @@ public class AddDealsFragment extends Fragment{
     private static final String ARG_SECTION_NUMBER = "section_number";
     private Button submitDeal;
     private ImageButton hideKeyBoard;
+    private ImageButton takeASnap;
     private EditText shopName;
     private EditText discount;
     private EditText content;
     private HotDeal newDeal;
-    private DatabaseHandler hotDealsDataBasse;
+    private DatabaseHandler hotDealsDataBase;
+    private static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 100;
+    private Bitmap image = null;
 
 
     public AddDealsFragment() {
@@ -56,7 +69,8 @@ public class AddDealsFragment extends Fragment{
         View rootView = inflater.inflate(R.layout.fragment_add_deals, container, false);
         addSubmitButton(rootView);
         addHideKeyBoardButton(rootView);
-        hotDealsDataBasse = new DatabaseHandler("TrendsSharer-private_database","HotDeals",getActivity());
+        addTakeASnapButton(rootView);
+        hotDealsDataBase = new DatabaseHandler("TrendsSharer-private_database","HotDeals",getActivity());
         return rootView;
     }
 
@@ -74,10 +88,11 @@ public class AddDealsFragment extends Fragment{
                 newDeal.setShopName(shopName.getText().toString());
                 newDeal.setDiscount(discount.getText().toString());
                 newDeal.setContent(content.getText().toString());
+                newDeal.setImage(image);
 
                 if (newDeal.isComplete()){
                     try {
-                        hotDealsDataBasse.addDeal(newDeal);
+                        hotDealsDataBase.addDeal(newDeal);
                         Log.i("New entry","New entry has been added for " + shopName.getText().toString());
                         newAlert("New deal added","Thank you for adding a hot deal",android.R.drawable.star_on);
                     }catch (Exception e){
@@ -104,6 +119,15 @@ public class AddDealsFragment extends Fragment{
         });
     }
 
+    private void addTakeASnapButton(View view){
+        takeASnap = (ImageButton) view.findViewById(R.id.btn_takeASnap);
+        takeASnap.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                takePhoto();
+            }
+        });
+    }
     private void newAlert(String title, String message, int icon){
         new AlertDialog.Builder(getContext())
                 .setTitle(title)
@@ -118,4 +142,34 @@ public class AddDealsFragment extends Fragment{
                 .setIcon(icon)
                 .show();
     }
+
+
+    public static byte[] getBitmapAsByteArray(Bitmap bitmap) {
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 0, outputStream);
+        return outputStream.toByteArray();
+    }
+
+    public void takePhoto() {
+        Intent cameraIntent=new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        getActivity().startActivityFromFragment(this, cameraIntent, CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        try {
+            if (requestCode == CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE) {
+                if (resultCode == Activity.RESULT_OK && data != null) {
+
+                    image = (Bitmap) data.getExtras().get("data");
+                    Toast.makeText(this.getActivity(), "Image saved", Toast.LENGTH_LONG).show();
+                }
+            }
+        } catch (Exception e) {
+            Toast.makeText(this.getActivity(), e + "Something went wrong", Toast.LENGTH_LONG).show();
+
+        }
+
+    }
+
 }
