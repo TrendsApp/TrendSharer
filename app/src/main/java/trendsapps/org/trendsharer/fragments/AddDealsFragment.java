@@ -25,6 +25,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -41,6 +42,7 @@ public class AddDealsFragment extends Fragment{
     private Button submitDeal;
     private ImageButton hideKeyBoard;
     private ImageButton takeASnap;
+    private ImageView displayImage;
     private EditText shopName;
     private EditText discount;
     private EditText content;
@@ -120,6 +122,7 @@ public class AddDealsFragment extends Fragment{
     }
 
     private void addTakeASnapButton(View view){
+        displayImage = (ImageView) view.findViewById(R.id.image_viewer);
         takeASnap = (ImageButton) view.findViewById(R.id.btn_takeASnap);
         takeASnap.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -162,7 +165,7 @@ public class AddDealsFragment extends Fragment{
                 if (resultCode == Activity.RESULT_OK && data != null) {
 
                     image = (Bitmap) data.getExtras().get("data");
-                    Toast.makeText(this.getActivity(), "Image saved", Toast.LENGTH_LONG).show();
+                    displayImage.setImageBitmap(image);
                 }
             }
         } catch (Exception e) {
