@@ -3,15 +3,19 @@ package trendsapps.org.trendsharer.fragments;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Parcelable;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
@@ -31,12 +35,15 @@ import android.widget.Toast;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import trendsapps.org.trendsharer.DatabaseHandler;
 import trendsapps.org.trendsharer.HotDeal;
 import trendsapps.org.trendsharer.R;
 
-public class AddDealsFragment extends Fragment{
+public class AddDealsFragment extends Fragment {
 
     private static final String ARG_SECTION_NUMBER = "section_number";
     private Button submitDeal;
@@ -50,6 +57,7 @@ public class AddDealsFragment extends Fragment{
     private DatabaseHandler hotDealsDataBase;
     private static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 100;
     private Bitmap image = null;
+    private Uri outputFileUri;
 
 
     public AddDealsFragment() {
@@ -72,11 +80,11 @@ public class AddDealsFragment extends Fragment{
         addSubmitButton(rootView);
         addHideKeyBoardButton(rootView);
         addTakeASnapButton(rootView);
-        hotDealsDataBase = new DatabaseHandler("TrendsSharer-private_database","HotDeals",getActivity());
+        hotDealsDataBase = new DatabaseHandler("TrendsSharer-private_database", "HotDeals", getActivity());
         return rootView;
     }
 
-    private void addSubmitButton(View view){
+    private void addSubmitButton(View view) {
         submitDeal = (Button) view.findViewById(R.id.btn_signup);
         shopName = (EditText) view.findViewById(R.id.input_shopName);
         discount = (EditText) view.findViewById(R.id.input_discount);
@@ -92,16 +100,16 @@ public class AddDealsFragment extends Fragment{
                 newDeal.setContent(content.getText().toString());
                 newDeal.setImage(image);
 
-                if (newDeal.isComplete()){
+                if (newDeal.isComplete()) {
                     try {
                         hotDealsDataBase.addDeal(newDeal);
-                        Log.i("New entry","New entry has been added for " + shopName.getText().toString());
-                        newAlert("New deal added","Thank you for adding a hot deal",android.R.drawable.star_on);
-                    }catch (Exception e){
+                        Log.i("New entry", "New entry has been added for " + shopName.getText().toString());
+                        newAlert("New deal added", "Thank you for adding a hot deal", android.R.drawable.star_on);
+                    } catch (Exception e) {
                         Toast.makeText(getActivity(), "Error adding the new deal", Toast.LENGTH_LONG).show();
-                        Log.e("Adding record",e.getMessage());
+                        Log.e("Adding record", e.getMessage());
                     }
-                }else {
+                } else {
                     Toast.makeText(getActivity(), "Required fields are yet to be filled", Toast.LENGTH_LONG).show();
                 }
 
@@ -109,7 +117,7 @@ public class AddDealsFragment extends Fragment{
         });
     }
 
-    private void addHideKeyBoardButton(View view){
+    private void addHideKeyBoardButton(View view) {
         hideKeyBoard = (ImageButton) view.findViewById(R.id.btn_hide_keyboard);
         hideKeyBoard.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -121,17 +129,18 @@ public class AddDealsFragment extends Fragment{
         });
     }
 
-    private void addTakeASnapButton(View view){
+    private void addTakeASnapButton(View view) {
         displayImage = (ImageView) view.findViewById(R.id.image_viewer);
         takeASnap = (ImageButton) view.findViewById(R.id.btn_takeASnap);
         takeASnap.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                takePhoto();
+                openImageIntent();
             }
         });
     }
-    private void newAlert(String title, String message, int icon){
+
+    private void newAlert(String title, String message, int icon) {
         new AlertDialog.Builder(getContext())
                 .setTitle(title)
                 .setMessage(message)
@@ -146,33 +155,69 @@ public class AddDealsFragment extends Fragment{
                 .show();
     }
 
+    private void openImageIntent() {
 
-    public static byte[] getBitmapAsByteArray(Bitmap bitmap) {
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.PNG, 0, outputStream);
-        return outputStream.toByteArray();
+
+        final File root = new File(Environment.getExternalStorageDirectory() + File.separator + "MyDir" + File.separator);
+        root.mkdirs();
+        final String fname = "trendSharer.png";
+        final File sdImageMainDirectory = new File(root, fname);
+        outputFileUri = Uri.fromFile(sdImageMainDirectory);
+
+
+        final List<Intent> cameraIntents = new ArrayList<Intent>();
+        final Intent captureIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+        final PackageManager packageManager = getActivity().getPackageManager();
+        final List<ResolveInfo> listCam = packageManager.queryIntentActivities(captureIntent, 0);
+        for (ResolveInfo res : listCam) {
+            final String packageName = res.activityInfo.packageName;
+            final Intent intent = new Intent(captureIntent);
+            intent.setComponent(new ComponentName(res.activityInfo.packageName, res.activityInfo.name));
+            intent.setPackage(packageName);
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, outputFileUri);
+            cameraIntents.add(intent);
+        }
+
+        final Intent galleryIntent = new Intent();
+        galleryIntent.setType("image/*");
+        galleryIntent.setAction(Intent.ACTION_GET_CONTENT);
+        final Intent chooserIntent = Intent.createChooser(galleryIntent, "Select Source");
+        chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, cameraIntents.toArray(new Parcelable[cameraIntents.size()]));
+        getActivity().startActivityFromFragment(this, chooserIntent, CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE);
     }
 
-    public void takePhoto() {
-        Intent cameraIntent=new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        getActivity().startActivityFromFragment(this, cameraIntent, CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE);
-    }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        try {
+        if (resultCode == Activity.RESULT_OK) {
             if (requestCode == CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE) {
-                if (resultCode == Activity.RESULT_OK && data != null) {
+                final boolean isCamera;
+                if (data == null) {
+                    isCamera = true;
+                } else {
+                    final String action = data.getAction();
+                    if (action == null) {
+                        isCamera = false;
+                    } else {
+                        isCamera = action.equals(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+                    }
+                }
 
-                    image = (Bitmap) data.getExtras().get("data");
+                Uri selectedImageUri;
+                if (isCamera) {
+                    selectedImageUri = outputFileUri;
+                } else {
+                    selectedImageUri = data == null ? null : data.getData();
+                }
+                try {
+                    image = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), selectedImageUri);
                     displayImage.setImageBitmap(image);
+                } catch (IOException e) {
+                    Toast.makeText(getActivity(), "Problem capturing the image", Toast.LENGTH_LONG).show();
+                    e.printStackTrace();
                 }
             }
-        } catch (Exception e) {
-            Toast.makeText(this.getActivity(), e + "Something went wrong", Toast.LENGTH_LONG).show();
-
         }
-
     }
 
 }
