@@ -24,12 +24,12 @@ public class DatabaseHandler {
         }
 
         dealsTableName = tableName;
-        String createTableQuery = "CREATE TABLE IF NOT EXISTS "+dealsTableName+"(ID integer primary key,Shop VARCHAR,Discount VARCHAR,Content VARCHAR,Duration INTEGER);";
+        String createTableQuery = "CREATE TABLE IF NOT EXISTS "+dealsTableName+"(ID integer primary key AUTOINCREMENT,Shop VARCHAR,Discount VARCHAR,Content VARCHAR,Duration INTEGER);";
         hotDealsDataBase.execSQL(createTableQuery);
     }
 
     public void addDeal(HotDeal newDeal){
-        String insertNewDealQuery = "INSERT INTO "+dealsTableName+" VALUES('"+newDeal.getShopName()+"','"+newDeal.getDiscount()+"','"+newDeal.getContent()+"',"+newDeal.getDuration()+");";
+        String insertNewDealQuery = "INSERT INTO "+dealsTableName+"(Shop,Discount,Content,Duration) VALUES('"+newDeal.getShopName()+"','"+newDeal.getDiscount()+"','"+newDeal.getContent()+"',"+newDeal.getDuration()+");";
         hotDealsDataBase.execSQL(insertNewDealQuery);
     }
 

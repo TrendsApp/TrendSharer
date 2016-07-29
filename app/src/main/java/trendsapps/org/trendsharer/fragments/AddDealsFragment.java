@@ -9,11 +9,16 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import trendsapps.org.trendsharer.DatabaseHandler;
@@ -24,12 +29,12 @@ public class AddDealsFragment extends Fragment{
 
     private static final String ARG_SECTION_NUMBER = "section_number";
     private Button submitDeal;
+    private ImageButton hideKeyBoard;
     private EditText shopName;
     private EditText discount;
     private EditText content;
     private HotDeal newDeal;
     private DatabaseHandler hotDealsDataBasse;
-    private AppCompatActivity activity = null;
 
 
     public AddDealsFragment() {
@@ -44,15 +49,13 @@ public class AddDealsFragment extends Fragment{
         return fragment;
     }
 
-    private void setActivity(AppCompatActivity activity){
-     this.activity = activity;
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_add_deals, container, false);
         addSubmitButton(rootView);
+        addHideKeyBoardButton(rootView);
         hotDealsDataBasse = new DatabaseHandler("TrendsSharer-private_database","HotDeals",getActivity());
         return rootView;
     }
@@ -78,11 +81,24 @@ public class AddDealsFragment extends Fragment{
                         Log.i("New entry","New entry has been added for " + shopName.getText().toString());
                         newAlert("New deal added","Thank you for adding a hot deal",android.R.drawable.star_on);
                     }catch (Exception e){
+                        Toast.makeText(getActivity(), "Error adding the new deal", Toast.LENGTH_LONG).show();
                         Log.e("Adding record",e.getMessage());
                     }
                 }else {
                     Toast.makeText(getActivity(), "Required fields are yet to be filled", Toast.LENGTH_LONG).show();
                 }
+
+            }
+        });
+    }
+
+    private void addHideKeyBoardButton(View view){
+        hideKeyBoard = (ImageButton) view.findViewById(R.id.btn_hide_keyboard);
+        hideKeyBoard.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                InputMethodManager inputManager = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                inputManager.hideSoftInputFromWindow(view.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
 
             }
         });
@@ -99,11 +115,6 @@ public class AddDealsFragment extends Fragment{
                         content.getText().clear();
                     }
                 })
-//                .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-//                    public void onClick(DialogInterface dialog, int which) {
-//                        // do nothing
-//                    }
-//                })
                 .setIcon(icon)
                 .show();
     }
