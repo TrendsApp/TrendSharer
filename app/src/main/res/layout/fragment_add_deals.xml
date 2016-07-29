@@ -36,20 +36,20 @@
 
             <ImageButton
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent"
+                android:layout_height="fill_parent"
                 android:id="@+id/btn_hide_keyboard"
                 android:src="@drawable/ic_keyboard"
                 android:layout_weight="0.04" />
 
             <ImageButton
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="fill_parent"
                 android:id="@+id/btn_takeASnap"
                 android:src="@android:drawable/ic_menu_camera" />
 
             <ImageView
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent"
+                android:layout_height="fill_parent"
                 android:id="@+id/image_viewer"
                 android:layout_gravity="center" />
         </LinearLayout>
