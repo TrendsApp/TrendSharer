@@ -12,6 +12,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -49,6 +50,7 @@ public class AddDealsFragment extends Fragment {
     private Button submitDeal;
     private ImageButton hideKeyBoard;
     private ImageButton takeASnap;
+    private ImageView imageView;
     private EditText shopName;
     private EditText discount;
     private EditText content;
@@ -76,6 +78,7 @@ public class AddDealsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_add_deals, container, false);
+        imageView = (ImageView) rootView.findViewById(R.id.imageView);
         addSubmitButton(rootView);
         addHideKeyBoardButton(rootView);
         addTakeASnapButton(rootView);
@@ -211,6 +214,7 @@ public class AddDealsFragment extends Fragment {
                 }
                 try {
                     image = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), selectedImageUri);
+                    imageView.setImageBitmap(image);
                     Toast.makeText(getActivity(), "Image successfully loaded", Toast.LENGTH_SHORT).show();
                 } catch (IOException e) {
                     Toast.makeText(getActivity(), "Problem capturing the image", Toast.LENGTH_LONG).show();
