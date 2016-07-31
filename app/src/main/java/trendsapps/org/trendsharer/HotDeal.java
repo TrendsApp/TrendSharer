@@ -56,6 +56,10 @@ public class HotDeal {
         image = baos.toByteArray();
     }
 
+    public void setImageFromByteArr(byte[] imageByte){
+        image = imageByte;
+    }
+
     public byte[] getImageAsByteArr(){
         return image;
     }
