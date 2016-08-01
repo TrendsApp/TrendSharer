@@ -4,8 +4,13 @@ package trendsapps.org.trendsharer;
 import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class DatabaseHandler {
 
@@ -41,7 +46,38 @@ public class DatabaseHandler {
 //        String insertNewDealQuery = "INSERT INTO "+dealsTableName+"(Shop,Discount,Content,Duration,Snap) VALUES('"+newDeal.getShopName()+"','"+newDeal.getDiscount()+"','"+newDeal.getContent()+"',"+newDeal.getDuration()+",'"+newDeal.getImageAsByteArr()+"');";
 //        hotDealsDataBase.execSQL(insertNewDealQuery);
     }
+    /*
+       Retrieve all the hot deals from the sqlite database,
+    */
+    public HotDeal[] getDeals(){
 
+        String getAlltheDataQuery = "SELECT * FROM "+ dealsTableName+ "WHERE TRUE";
+        Cursor dataRows = null;
+        dataRows = hotDealsDataBase.rawQuery(getAlltheDataQuery,null);
+        HotDeal[] hotDeals = new HotDeal[dataRows.getCount()];
+        // if cursor is moved to the first row. then fecth all the data.
+        if(dataRows.moveToFirst());{
+            for(int i=0;i<hotDeals.length;i++){
+                hotDeals[i].setShopName(dataRows.getString(dataRows.getColumnIndex("Content")));
+                hotDeals[i].setContent(dataRows.getString(dataRows.getColumnIndex("Content")));
+                hotDeals[i].setDiscount(dataRows.getString(dataRows.getColumnIndex("Discount")));
+                hotDeals[i].setDuration(dataRows.getInt(dataRows.getColumnIndex("Duration")));
+                String date = dataRows.getString(dataRows.getColumnIndex("StoredDate"));
+                SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+                try {
+                    Date dateTime = format.parse(date);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+
+                hotDeals[i].setImage(dataRows.getBlob(dataRows.getColumnIndex("Photo"))); // image is taken as a byte array.
+                // now change this to a BitMap so that we can get it as an Image
+
+            }
+        }
+        // Hot deals are created. Need to create it.
+        return hotDeals;
+    }
     public SQLiteDatabase getHotDealsDataBase(){
         return getHotDealsDataBase();
     }
