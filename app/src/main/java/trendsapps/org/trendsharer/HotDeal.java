@@ -50,6 +50,9 @@ public class HotDeal {
         this.isPublishedByAnOwner = isPublishedByAnOwner;
     }
 
+    public void setImage(byte [] arr){
+        this.image = arr;
+    }
     public void setImage(Bitmap bitmap){
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
