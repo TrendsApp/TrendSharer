@@ -1,19 +1,13 @@
 package trendsapps.org.trendsharer.fragments;
 
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.util.ArrayList;
-
-import trendsapps.org.trendsharer.DatabaseHandler;
-import trendsapps.org.trendsharer.HotDeal;
 import trendsapps.org.trendsharer.HotDealAdapter;
 import trendsapps.org.trendsharer.R;
 
@@ -23,9 +17,8 @@ public class HotDealsFragment extends Fragment {
      * fragment.
      */
     private static final String ARG_SECTION_NUMBER = "section_number";
-    private DatabaseHandler hotDealsDataBase;
+
     private RecyclerView recyclerView;
-    private ArrayList<HotDeal> dealTemp = new ArrayList<>();
 
     public HotDealsFragment() {
     }
@@ -51,24 +44,7 @@ public class HotDealsFragment extends Fragment {
         recyclerView = (RecyclerView) rootView.findViewById(R.id.my_recycler_view);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-
-        //String has to be replaced with HotDeal object.
-        ArrayList<HotDeal> hotdeals = new ArrayList<HotDeal>();
-        hotDealsDataBase = new DatabaseHandler("TrendsSharer-private_database", "HotDeals", getActivity());
-
-        ArrayList<HotDeal> dealsTemp =  hotDealsDataBase.getDeals();
-        if(DatabaseHandler.newDealAdded){
-            dealsTemp = hotDealsDataBase.getDeals();
-            DatabaseHandler.newDealAdded = false;
-        }
-
-
-        int i=0;
-        while (i< dealsTemp.size()){
-            hotdeals.add(dealsTemp.get(i));
-            i++;
-        }
-        recyclerView.setAdapter(new HotDealAdapter(hotdeals));
+        recyclerView.setAdapter(new HotDealAdapter());
         return rootView;
     }
 }

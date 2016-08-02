@@ -61,7 +61,6 @@ public class AddDealsFragment extends Fragment {
     private Uri outputFileUri;
 
 
-
     public AddDealsFragment() {
     }
 
