@@ -10,7 +10,6 @@ import android.util.Log;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 
 public class DatabaseHandler {
@@ -18,7 +17,6 @@ public class DatabaseHandler {
     private SQLiteDatabase hotDealsDataBase;
     private String dealsTableName;
     private ContentValues contentValues;
-    public static boolean newDealAdded = false;
 
     public DatabaseHandler(SQLiteDatabase database){
       this.hotDealsDataBase = database;
@@ -26,15 +24,14 @@ public class DatabaseHandler {
 
     public DatabaseHandler(String databaseName,String tableName,Activity activity){
         try {
-
             this.hotDealsDataBase = activity.openOrCreateDatabase(databaseName, Context.MODE_PRIVATE,null);
             Log.i("Database Initialized","Database initialization completed ");
         }catch (Exception e){
-            Log.e("Database initializing ",e.getMessage());
+            Log.e("Database initializing",e.getMessage());
         }
 
         dealsTableName = tableName;
-        String createTableQuery = "CREATE TABLE IF NOT EXISTS "+dealsTableName+" (ID integer primary key AUTOINCREMENT,Shop VARCHAR,Discount VARCHAR,Content VARCHAR,Duration INTEGER,Photo blob);";
+        String createTableQuery = "CREATE TABLE IF NOT EXISTS "+dealsTableName+"(ID integer primary key AUTOINCREMENT,Shop VARCHAR,Discount VARCHAR,Content VARCHAR,Duration INTEGER,Photo blob);";
         hotDealsDataBase.execSQL(createTableQuery);
     }
 
@@ -46,57 +43,40 @@ public class DatabaseHandler {
         contentValues.put("Duration",newDeal.getDuration());
         contentValues.put("Photo",newDeal.getImageAsByteArr());
         hotDealsDataBase.insert(dealsTableName,null,contentValues);
-        newDealAdded = true;
+//        String insertNewDealQuery = "INSERT INTO "+dealsTableName+"(Shop,Discount,Content,Duration,Snap) VALUES('"+newDeal.getShopName()+"','"+newDeal.getDiscount()+"','"+newDeal.getContent()+"',"+newDeal.getDuration()+",'"+newDeal.getImageAsByteArr()+"');";
+//        hotDealsDataBase.execSQL(insertNewDealQuery);
     }
     /*
        Retrieve all the hot deals from the sqlite database,
     */
-    public ArrayList<HotDeal> getDeals(){
+    public HotDeal[] getDeals(){
 
-        String getAlltheDataQuery = "SELECT * FROM "+ dealsTableName;// think about divide querying in to parts.
+        String getAlltheDataQuery = "SELECT * FROM "+ dealsTableName+ "WHERE TRUE";
         Cursor dataRows = null;
         dataRows = hotDealsDataBase.rawQuery(getAlltheDataQuery,null);
-        ArrayList<HotDeal> hotDeals = new ArrayList<>();
+        HotDeal[] hotDeals = new HotDeal[dataRows.getCount()];
         // if cursor is moved to the first row. then fecth all the data.
-        System.out.println(dataRows.getCount());
-        if(dataRows.moveToFirst()) {
-            while (dataRows.isAfterLast() == false){
-                HotDeal temp = new HotDeal();
-                    temp.setShopName(dataRows.getString(dataRows.getColumnIndex("Shop")));
-                    temp.setContent(dataRows.getString(dataRows.getColumnIndex("Content")));
-                    temp.setDiscount(dataRows.getString(dataRows.getColumnIndex("Discount")));
-                    temp.setDuration(dataRows.getInt(dataRows.getColumnIndex("Duration")));
-//                String date = dataRows.getString(dataRows.getColumnIndex("StoredDate"));
-//                SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-//                try {
-//                    Date dateTime = format.parse(date);
-//                    temp.setStoredDate(dateTime);
-//                } catch (ParseException e) {
-//                    e.printStackTrace();
-//                }
+        if(dataRows.moveToFirst());{
+            for(int i=0;i<hotDeals.length;i++){
+                hotDeals[i].setShopName(dataRows.getString(dataRows.getColumnIndex("Content")));
+                hotDeals[i].setContent(dataRows.getString(dataRows.getColumnIndex("Content")));
+                hotDeals[i].setDiscount(dataRows.getString(dataRows.getColumnIndex("Discount")));
+                hotDeals[i].setDuration(dataRows.getInt(dataRows.getColumnIndex("Duration")));
+                String date = dataRows.getString(dataRows.getColumnIndex("StoredDate"));
+                SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+                try {
+                    Date dateTime = format.parse(date);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
 
-                    temp.setImage(dataRows.getBlob(dataRows.getColumnIndex("Photo"))); // image is taken as a byte array.
-                    // now change this to a BitMap so that we can get it as an Image
-                    hotDeals.add(temp);
-                    System.out.println("Check");
-                dataRows.moveToNext();
+                hotDeals[i].setImage(dataRows.getBlob(dataRows.getColumnIndex("Photo"))); // image is taken as a byte array.
+                // now change this to a BitMap so that we can get it as an Image
+
             }
         }
-        dataRows.close();
-
-
-
-
         // Hot deals are created. Need to create it.
-        return hotDeals; // terminating condition.
-    }
-
-    public int getHotDealsCount(){
-        String getCountQuery = "SELECT count(*) as alldeals FROM "+ dealsTableName;
-        Cursor dealsCount = null;
-        dealsCount = hotDealsDataBase.rawQuery(getCountQuery,null);
-        int dealstotal = dealsCount.getCount();
-        return dealstotal;
+        return hotDeals;
     }
     public SQLiteDatabase getHotDealsDataBase(){
         return getHotDealsDataBase();
