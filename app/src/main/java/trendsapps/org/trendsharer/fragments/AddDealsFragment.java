@@ -37,7 +37,9 @@ import android.widget.Toast;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import trendsapps.org.trendsharer.DatabaseHandler;
@@ -101,6 +103,7 @@ public class AddDealsFragment extends Fragment {
                 newDeal.setShopName(shopName.getText().toString());
                 newDeal.setDiscount(discount.getText().toString());
                 newDeal.setContent(content.getText().toString());
+                newDeal.setStoredDate(new Timestamp(new Date().getTime()));
                 if (image!= null){
                     newDeal.setImage(image);
                 }

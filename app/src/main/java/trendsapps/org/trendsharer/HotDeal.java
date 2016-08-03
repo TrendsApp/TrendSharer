@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
 import java.io.ByteArrayOutputStream;
+import java.sql.Timestamp;
 import java.util.Date;
 
 public class HotDeal {
@@ -13,7 +14,7 @@ public class HotDeal {
     private String discount;
     private String content = null;
     private int duration = 20;
-    private Date storedDate ;
+    private Timestamp storedDate ;
     private boolean isPublishedByAnOwner = false;
     private byte[] image = null;
     private boolean hasImage = false;
@@ -54,7 +55,7 @@ public class HotDeal {
         return storedDate;
     }
 
-    public void setStoredDate(Date storedDate) {
+    public void setStoredDate(Timestamp storedDate) {
         this.storedDate = storedDate;
     }
 
@@ -81,7 +82,10 @@ public class HotDeal {
     }
 
     public Bitmap getImageAsBitMap(){
-        return BitmapFactory.decodeByteArray(image, 0, image.length);
+
+        if(image != null)
+            return BitmapFactory.decodeByteArray(image, 0, image.length);
+        return null;
     }
 
     public String getShopName(){
