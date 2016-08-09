@@ -3,9 +3,10 @@ package trendsapps.org.trendsharer;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.util.Log;
 
 import java.io.ByteArrayOutputStream;
+import java.sql.Timestamp;
+import java.util.Date;
 
 public class HotDeal {
     private int ID;
@@ -13,21 +14,25 @@ public class HotDeal {
     private String discount;
     private String content = null;
     private int duration = 20;
+    private Timestamp storedDate ;
     private boolean isPublishedByAnOwner = false;
     private byte[] image = null;
+    private boolean hasImage = false;
 
     public HotDeal(){
-
+        this.hasImage = false;
     }
     public HotDeal(int ID,String shopName, String discount){
         this.ID = ID;
         this.shop = shopName;
         this.shop = discount;
+        this.hasImage = false;
     }
 
     public HotDeal(String shopName, String discount){
         this.shop = shopName;
         this.shop = discount;
+        this.hasImage = false;
     }
 
     public void setShopName(String shopName){
@@ -46,12 +51,21 @@ public class HotDeal {
         this.duration = duration;
     }
 
+    public Date getStoredDate() {
+        return storedDate;
+    }
+
+    public void setStoredDate(Timestamp storedDate) {
+        this.storedDate = storedDate;
+    }
+
     public void publishedByOwner(boolean isPublishedByAnOwner){
         this.isPublishedByAnOwner = isPublishedByAnOwner;
     }
 
     public void setImage(byte [] arr){
         this.image = arr;
+        hasImage = true;
     }
     public void setImage(Bitmap bitmap){
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -68,7 +82,10 @@ public class HotDeal {
     }
 
     public Bitmap getImageAsBitMap(){
-        return BitmapFactory.decodeByteArray(image, 0, image.length);
+
+        if(image != null)
+            return BitmapFactory.decodeByteArray(image, 0, image.length);
+        return null;
     }
 
     public String getShopName(){
@@ -87,6 +104,7 @@ public class HotDeal {
         return duration;
     }
 
+    public boolean hasImageinDeal(){return hasImage;}
     public boolean isPublishedByAnOwner(){
         return isPublishedByAnOwner;
     }
