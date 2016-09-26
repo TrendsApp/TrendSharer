@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import trendsapps.org.trendsharer.fragments.AddDealsFragment;
 import trendsapps.org.trendsharer.fragments.FavouritesFragment;
@@ -130,5 +131,9 @@ public class MainActivity extends AppCompatActivity {
             }
             return null;
         }
+    }
+
+    public void sendData(View v){
+
     }
 }
