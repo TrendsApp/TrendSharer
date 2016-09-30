@@ -123,11 +123,16 @@ public class MainActivity extends AppCompatActivity {
                             break;*/
                             // Make a toast
 //                            Toast.makeText(this,"Device Connected with another",Toast.LENGTH_LONG);
+                            break;
                         case BluetoothService.STATE_CONNECTING:
                             /*setStatus(R.string.title_connecting);
                             break;*/
+                            Toast.makeText(getApplicationContext(),"Device Connected",Toast.LENGTH_LONG);
+                            break;
                         case BluetoothService.STATE_LISTEN:
+                            break;
                         case BluetoothService.STATE_NONE:
+                            break;
                           /*  setStatus(R.string.title_not_connected);
                             break;*/
                     }
