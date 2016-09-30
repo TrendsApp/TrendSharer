@@ -70,53 +70,31 @@ public class MainActivity extends AppCompatActivity {
 
 
     private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
+
+        @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
+            Log.i("Connect","#######");
             // When discovery finds a device
             if (BluetoothDevice.ACTION_FOUND.equals(action)) {
                 // Get the BluetoothDevice object from the Intent
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                // Add the name and address to an array adapter to show in a ListView
-                deviceList.add(device);
-                Log.i("connect","add device " + device.getName());
-            }else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)){
-                // discovery has finished, give a call to fetchUuidsWithSdp on first device in list
-                Log.i("connect","discovery finished");
-                if(!deviceList.isEmpty()){
-                    BluetoothDevice device = deviceList.remove(0);
-                    boolean result = device.fetchUuidsWithSdp(); // fetch uuid from first device in the list
-                }
-
-            }else if (BluetoothDevice.ACTION_UUID.equals(action)){
-                // This is when we can be assured that fetchUuidsWithSdp has completed.
-                // So get the uuids and call fetchUuidsWithSdp on another device in list
-                BluetoothDevice deviceExtra = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                Parcelable[] uuidExtra = intent.getParcelableArrayExtra(BluetoothDevice.EXTRA_UUID);
-                Log.i("connect","DeviceExtra name - " + deviceExtra.getName() + " " + deviceExtra.getAddress());
-                if (uuidExtra != null) {
-                    for (Parcelable p : uuidExtra) {
-                        ParcelUuid uuidExtraParc =(ParcelUuid)p;
-                        UUID uuid = uuidExtraParc.getUuid();
-                       // deviceExtra.createInsecureRfcommSocketToServiceRecord(p.);
-                        Log.i("connect","DeviceExtra name - " + deviceExtra.getName() + " " + deviceExtra.getAddress());
-
+                Log.i("Discover","found device: " + device.getName());
+                // If it's already paired, skip it, because it's been listed already
+                if (device.getBondState() != BluetoothDevice.BOND_BONDED) {
+                   // mNewDevicesArrayAdapter.add(device.getName() + "\n" + device.getAddress());
+                    if(device.getAddress().equals(acceptingDeviceAddress) && !connected){
+                        mChatService.connect(device,false);
+                        connected = true;
                     }
-                } else {
-                    Log.i("Connect","uuidExtra is still null");
                 }
-                if (!deviceList.isEmpty()) {
-                    BluetoothDevice device = deviceList.remove(0);
-                    boolean result = device.fetchUuidsWithSdp();
-                }
-
-                //connect
-                if(deviceExtra.getAddress().equals(acceptingDeviceAddress) && !connected){
-                    mChatService.connect(deviceExtra,false);
-                    Log.i("Connect","status: " + mChatService.getState());
-                    connected = true;
-                }
-
-                //end connect
+                // When discovery is finished, change the Activity title
+            } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
+                Log.i("Discovery","####  Finished  ####");
+               /* if (mNewDevicesArrayAdapter.getCount() == 0) {
+                    String noDevices = getResources().getText(R.string.none_found).toString();
+                    mNewDevicesArrayAdapter.add(noDevices);
+                }*/
             }
         }
     };
@@ -124,6 +102,7 @@ public class MainActivity extends AppCompatActivity {
     public Activity getActivity(){
         return this;
     }
+
     /**
      * The Handler that gets information back from the BluetoothChatService
      */
@@ -299,6 +278,7 @@ public class MainActivity extends AppCompatActivity {
         Log.i("starting","about to start");
         mChatService.start();
         bluetoothAdapter.startDiscovery();
+
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
