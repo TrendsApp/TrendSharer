@@ -438,9 +438,9 @@ public class BluetoothService {
             // Keep listening to the InputStream while connected
             while (mState == STATE_CONNECTED) {
                 try {
-              /*   *//*   i++;
+              /*   *//*   i++;*/
                     write((new String("Hello World" + i + "\n")).getBytes());
-                    Log.i("message","messge sent " + i);*//*
+                    Log.i("message","messge sent " );
                   //  wait(300);*/
                     bytes = mmInStream.read(buffer);
 
