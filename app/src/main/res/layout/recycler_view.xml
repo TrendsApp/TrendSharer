@@ -18,16 +18,9 @@
         android:layout_height="match_parent">
 
         <TextView
-            android:id="@+id/deal_data_time"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="20dp"
-            android:text="2016-08:01/12:50"/>
-        <TextView
             android:id="@+id/deal_discount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/deal_data_time"
             android:layout_margin="4dp"
             android:textSize="30dp"
             android:text="Discount"/>
@@ -35,11 +28,11 @@
             android:id="@+id/deal_shop_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/deal_data_time"
-            android:layout_toRightOf="@+id/deal_discount"
             android:layout_marginLeft="80dp"
             android:textSize="30dp"
-            android:text="Shop Name"/>
+            android:text="Shop Name"
+            android:layout_above="@+id/deal_content"
+            android:layout_alignParentEnd="true" />
         <TextView
             android:id="@+id/deal_content"
             android:layout_width="wrap_content"
@@ -47,10 +40,20 @@
             android:layout_below="@+id/deal_discount"
             android:textSize="20dp"
             android:text="Content that need to be filled"/>
+
+        <RatingBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/ratingBar"
+            android:layout_below="@+id/deal_content"
+            android:layout_alignParentEnd="true"
+            android:theme="@style/RatingBar"/>
+
         <ImageView
             android:id="@+id/deal_view_image"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/deal_content"/>
+
     </RelativeLayout>
 </android.support.v7.widget.CardView>
