@@ -57,6 +57,13 @@ public class HotDealsFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         mSwipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.swipeRefreshLayout);
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+                                                     @Override
+                                                     public void onRefresh() {
+                                                         updateList();
+                                                         mSwipeRefreshLayout.setRefreshing(false);
+                                                     }
+                                                 });
 //
 //        mSwipeRefreshLayout.OnRefreshListener(new SwipeRefreshLayout.OnRefreshListener(){
 //
