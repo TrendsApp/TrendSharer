@@ -7,10 +7,11 @@
     android:layout_gravity="center"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    card_view:cardCornerRadius="5dp"
-    card_view:contentPadding="10dp"
+    card_view:cardCornerRadius="1dp"
+    card_view:contentPaddingLeft="10dp"
     card_view:contentPaddingBottom="10dp"
-    card_view:cardElevation="10dp">
+    card_view:cardElevation="10dp"
+    android:onClick="sendData">
 
     <RelativeLayout
         android:id="@+id/view_card_layout"
@@ -22,7 +23,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="20dp"
-            android:text="2016-08:01/12:50"/>
+            android:text="2016-08-01:12.50"/>
         <TextView
             android:id="@+id/deal_discount"
             android:layout_width="wrap_content"

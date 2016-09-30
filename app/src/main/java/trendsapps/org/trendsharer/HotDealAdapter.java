@@ -32,7 +32,6 @@ public class HotDealAdapter extends RecyclerView.Adapter<HotDealAdapter.ViewHold
         holder.shopName.setText(hotdeals.get(position).getShopName());
         holder.discount.setText(hotdeals.get(position).getDiscount());
         holder.content.setText(hotdeals.get(position).getContent());
-        boolean hasImg = hotdeals.get(position).hasImageinDeal();
         if(hotdeals.get(position).getImageAsBitMap()!= null)
             holder.viewImage.setImageBitmap(hotdeals.get(position).getImageAsBitMap());
         System.out.println("gfgsfsdfs");
