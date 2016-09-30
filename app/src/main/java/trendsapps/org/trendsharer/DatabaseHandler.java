@@ -20,7 +20,7 @@ public class DatabaseHandler {
     private String dealsTableName;
     private ContentValues contentValues;
     public static boolean newDealAdded = false;
-
+    public static final String DATABSENAME = "trends-db";
     public DatabaseHandler(SQLiteDatabase database){
       this.hotDealsDataBase = database;
     }

@@ -26,6 +26,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -49,11 +50,12 @@ public class MainActivity extends AppCompatActivity {
      * {@link android.support.v4.app.FragmentStatePagerAdapter}.
      */
     private SectionsPagerAdapter mSectionsPagerAdapter;
-
+    public static String receivedMessage = "";
     /**
      * The {@link ViewPager} that will host the section contents.
      */
     private ViewPager mViewPager;
+    private Button sendButton;
     private int REQUEST_ENABLE_BT = 34;
     BluetoothAdapter bluetoothAdapter;
     ArrayList<BluetoothDevice> deviceList;
@@ -140,6 +142,8 @@ public class MainActivity extends AppCompatActivity {
                           /*  setStatus(getString(R.string.title_connected_to, mConnectedDeviceName));
                             mConversationArrayAdapter.clear();
                             break;*/
+                            // Make a toast
+//                            Toast.makeText(this,"Device Connected with another",Toast.LENGTH_LONG);
                         case BluetoothService.STATE_CONNECTING:
                             /*setStatus(R.string.title_connecting);
                             break;*/
@@ -158,9 +162,15 @@ public class MainActivity extends AppCompatActivity {
                 case Constants.MESSAGE_READ:
                     byte[] readBuf = (byte[]) msg.obj;
                     // construct a string from the valid bytes in the buffer
+                    try{
                     String readMessage = new String(readBuf, 0, msg.arg1);
+                    receivedMessage = readMessage;
 //                    mConversationArrayAdapter.add(mConnectedDeviceName + ":  " + readMessage);
                     Log.i("Msg",readMessage);
+                    }catch (Exception e){
+                        Log.i("Error Message",e.getMessage());
+                    }
+
                     break;
                 case Constants.MESSAGE_DEVICE_NAME:
                    /* // save the connected device's name
@@ -186,10 +196,11 @@ public class MainActivity extends AppCompatActivity {
      *
      * @param message A string of text to send.
      */
-    private void sendMessage(String message) {
+    public void sendMessage(String message) {
         // Check that we're actually connected before trying anything
         if (mChatService.getState() != BluetoothService.STATE_CONNECTED) {
         //    Toast.makeText(getActivity(), R.string.not_connected, Toast.LENGTH_SHORT).show();
+            Log.i("Not Connected","Message Sending");
             return;
         }
         // Check that there's actually something to send
@@ -249,7 +260,8 @@ public class MainActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Latest hot deal is: ", Snackbar.LENGTH_LONG)
+                String message = receivedMessage;
+                Snackbar.make(view, "Latest hot deal is: "+message, Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
         });
@@ -383,5 +395,6 @@ public class MainActivity extends AppCompatActivity {
 
     public void sendData(View v){
 
+        this.sendMessage("jawdahjdkas");
     }
 }

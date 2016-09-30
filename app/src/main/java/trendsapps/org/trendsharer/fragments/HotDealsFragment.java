@@ -2,6 +2,7 @@ package trendsapps.org.trendsharer.fragments;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -29,7 +30,7 @@ public class HotDealsFragment extends Fragment {
     private ArrayList<HotDeal> hotdeals = new ArrayList<>();
     private Button refreshDeals ;
 
-
+    private SwipeRefreshLayout mSwipeRefreshLayout ;
     public HotDealsFragment() {
     }
 
@@ -55,7 +56,16 @@ public class HotDealsFragment extends Fragment {
         recyclerView.setHasFixedSize(false);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        updateList(rootView);
+        mSwipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.swipeRefreshLayout);
+//
+//        mSwipeRefreshLayout.OnRefreshListener(new SwipeRefreshLayout.OnRefreshListener(){
+//
+//            @Override
+//            public void onRefresh() {
+//                updateList();
+//                mSwipeRefreshLayout.setRefreshing(false);
+//            }
+//        });
 
         //String has to be replaced with HotDeal object.
 
@@ -69,26 +79,7 @@ public class HotDealsFragment extends Fragment {
     }
 
 
-    public void updateList(View view){
-        refreshDeals = (Button) view.findViewById(R.id.btn_refresh);
-
-        refreshDeals.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                hotDealsDataBase = new DatabaseHandler(DatabaseHandler.DATABSENAME, "HotDeals", getActivity());
-
-                ArrayList<HotDeal> dealsTemp = hotDealsDataBase.getDeals();
-                int i = 0;
-                while (i < dealsTemp.size()) {
-                    hotdeals.add(dealsTemp.get(i));
-                    i++;
-                }
-
-                hotDealAdapter = new HotDealAdapter(hotdeals);
-                recyclerView.setAdapter(hotDealAdapter);
-
-            }
-        });
+    public void updateList(){
         hotDealsDataBase = new DatabaseHandler(DatabaseHandler.DATABSENAME, "HotDeals", getActivity());
 
         ArrayList<HotDeal> dealsTemp = hotDealsDataBase.getDeals();
@@ -97,8 +88,25 @@ public class HotDealsFragment extends Fragment {
             hotdeals.add(dealsTemp.get(i));
             i++;
         }
+
         hotDealAdapter = new HotDealAdapter(hotdeals);
         recyclerView.setAdapter(hotDealAdapter);
+
+//
+//        hotDealsDataBase = new DatabaseHandler(DatabaseHandler.DATABSENAME, "HotDeals", getActivity());
+//
+//        ArrayList<HotDeal> dealsTemp = hotDealsDataBase.getDeals();
+//        int i = 0;
+//        while (i < dealsTemp.size()) {
+//            hotdeals.add(dealsTemp.get(i));
+//            i++;
+//        }
+//        hotDealAdapter = new HotDealAdapter(hotdeals);
+//        recyclerView.setAdapter(hotDealAdapter);
+
+    }
+
+    public void update(){
 
     }
 
