@@ -7,6 +7,7 @@ import android.graphics.BitmapFactory;
 import java.io.ByteArrayOutputStream;
 import java.sql.Timestamp;
 import java.util.Date;
+import java.util.StringTokenizer;
 
 public class HotDeal {
     private int ID;
@@ -17,6 +18,7 @@ public class HotDeal {
     private Timestamp storedDate ;
     private boolean isPublishedByAnOwner = false;
     private byte[] image = null;
+    private String imagePath = "";
     private boolean hasImage = false;
 
     public HotDeal(){
@@ -71,6 +73,14 @@ public class HotDeal {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
         image = baos.toByteArray();
+    }
+
+    public String getImagePath() {
+        return imagePath;
+    }
+
+    public void setImagePath(String imagePath) {
+        this.imagePath = imagePath;
     }
 
     public void setImageFromByteArr(byte[] imageByte){
