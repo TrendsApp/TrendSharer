@@ -48,6 +48,15 @@
             android:layout_below="@+id/deal_discount"
             android:textSize="20dp"
             android:text="Content that need to be filled"/>
+
+        <RatingBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/ratingBar"
+            android:layout_below="@+id/deal_content"
+            android:layout_alignParentEnd="true"
+            android:theme="@style/RatingBar"/>
+
         <ImageView
             android:id="@+id/deal_view_image"
             android:layout_width="match_parent"
