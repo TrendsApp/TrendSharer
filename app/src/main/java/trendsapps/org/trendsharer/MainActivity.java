@@ -244,6 +244,13 @@ public class MainActivity extends AppCompatActivity {
         if (mChatService != null) {
             mChatService.stop();
         }
+
+        if (bluetoothAdapter != null) {
+            bluetoothAdapter.cancelDiscovery();
+        }
+
+        // Unregister broadcast listeners
+        this.unregisterReceiver(mReceiver);
     }
 
     private void startBluetoothService(){
