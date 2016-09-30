@@ -1,19 +1,19 @@
 package trendsapps.org.trendsharer;
 
+import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothServerSocket;
-import android.bluetooth.BluetoothSocket;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.net.Uri;
+import android.os.Handler;
+import android.os.Message;
 import android.os.ParcelUuid;
 import android.os.Parcelable;
-import android.support.annotation.BoolRes;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
@@ -26,15 +26,14 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
+import android.widget.Toast;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.UUID;
 
-import trendsapps.org.trendsharer.bluetoothService.BluetoothHandler;
 import trendsapps.org.trendsharer.bluetoothService.BluetoothService;
-import trendsapps.org.trendsharer.bluetoothService.SerializableBluetoothAdapter;
-import trendsapps.org.trendsharer.bluetoothService.ServerThread;
+import trendsapps.org.trendsharer.bluetoothService.Constants;
 import trendsapps.org.trendsharer.fragments.AddDealsFragment;
 import trendsapps.org.trendsharer.fragments.FavouritesFragment;
 import trendsapps.org.trendsharer.fragments.HotDealsFragment;
@@ -51,11 +50,12 @@ public class MainActivity extends AppCompatActivity {
      * {@link android.support.v4.app.FragmentStatePagerAdapter}.
      */
     private SectionsPagerAdapter mSectionsPagerAdapter;
-
+    public static String receivedMessage = "";
     /**
      * The {@link ViewPager} that will host the section contents.
      */
     private ViewPager mViewPager;
+    private Button sendButton;
     private int REQUEST_ENABLE_BT = 34;
     BluetoothAdapter bluetoothAdapter;
     ArrayList<BluetoothDevice> deviceList;
@@ -96,10 +96,6 @@ public class MainActivity extends AppCompatActivity {
                 BluetoothDevice deviceExtra = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                 Parcelable[] uuidExtra = intent.getParcelableArrayExtra(BluetoothDevice.EXTRA_UUID);
                 Log.i("connect","DeviceExtra name - " + deviceExtra.getName() + " " + deviceExtra.getAddress());
-
-
-
-
                 if (uuidExtra != null) {
                     for (Parcelable p : uuidExtra) {
                         ParcelUuid uuidExtraParc =(ParcelUuid)p;
@@ -120,19 +116,100 @@ public class MainActivity extends AppCompatActivity {
                 if(deviceExtra.getAddress().equals(acceptingDeviceAddress) && !connected){
                     mChatService.connect(deviceExtra,false);
                     Log.i("Connect","status: " + mChatService.getState());
-              /*      if(mChatService.getState() == mChatService.STATE_CONNECTED){
-                        // device is connected
-                        Log.i("connect","connected, starting writing");
-                        mChatService.write((new String("Hello World")).getBytes());
-                    }*/
                     connected = true;
                 }
-
 
                 //end connect
             }
         }
     };
+
+    public Activity getActivity(){
+        return this;
+    }
+    /**
+     * The Handler that gets information back from the BluetoothChatService
+     */
+    private final Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            FragmentActivity activity = (FragmentActivity)getActivity();
+            switch (msg.what) {
+                case Constants.MESSAGE_STATE_CHANGE:
+                    Log.i("State","changed");
+                    switch (msg.arg1) {
+                        case BluetoothService.STATE_CONNECTED:
+                          /*  setStatus(getString(R.string.title_connected_to, mConnectedDeviceName));
+                            mConversationArrayAdapter.clear();
+                            break;*/
+                            // Make a toast
+//                            Toast.makeText(this,"Device Connected with another",Toast.LENGTH_LONG);
+                        case BluetoothService.STATE_CONNECTING:
+                            /*setStatus(R.string.title_connecting);
+                            break;*/
+                        case BluetoothService.STATE_LISTEN:
+                        case BluetoothService.STATE_NONE:
+                          /*  setStatus(R.string.title_not_connected);
+                            break;*/
+                    }
+                    break;
+                case Constants.MESSAGE_WRITE:
+                   /* byte[] writeBuf = (byte[]) msg.obj;
+                    // construct a string from the buffer
+                    String writeMessage = new String(writeBuf);
+                    mConversationArrayAdapter.add("Me:  " + writeMessage);
+                    break;*/
+                case Constants.MESSAGE_READ:
+                    byte[] readBuf = (byte[]) msg.obj;
+                    // construct a string from the valid bytes in the buffer
+                    try{
+                    String readMessage = new String(readBuf, 0, msg.arg1);
+                    receivedMessage = readMessage;
+//                    mConversationArrayAdapter.add(mConnectedDeviceName + ":  " + readMessage);
+                    Log.i("Msg",readMessage);
+                    }catch (Exception e){
+                        Log.i("Error Message",e.getMessage());
+                    }
+
+                    break;
+                case Constants.MESSAGE_DEVICE_NAME:
+                   /* // save the connected device's name
+                    mConnectedDeviceName = msg.getData().getString(Constants.DEVICE_NAME);
+                    if (null != activity) {
+                        Toast.makeText(activity, "Connected to "
+                                + mConnectedDeviceName, Toast.LENGTH_SHORT).show();
+                    }
+                    break;*/
+                case Constants.MESSAGE_TOAST:
+                   /* if (null != activity) {
+                        Toast.makeText(activity, msg.getData().getString(Constants.TOAST),
+                                Toast.LENGTH_SHORT).show();
+                    }
+                    break;*/
+            }
+        }
+    };
+
+
+    /**
+     * Sends a message.
+     *
+     * @param message A string of text to send.
+     */
+    public void sendMessage(String message) {
+        // Check that we're actually connected before trying anything
+        if (mChatService.getState() != BluetoothService.STATE_CONNECTED) {
+        //    Toast.makeText(getActivity(), R.string.not_connected, Toast.LENGTH_SHORT).show();
+            Log.i("Not Connected","Message Sending");
+            return;
+        }
+        // Check that there's actually something to send
+        if (message.length() > 0) {
+            // Get the message bytes and tell the BluetoothChatService to write
+            byte[] send = message.getBytes();
+            mChatService.write(send);
+        }
+    }
 
 
     @Override
@@ -183,7 +260,8 @@ public class MainActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Latest hot deal is: ", Snackbar.LENGTH_LONG)
+                String message = receivedMessage;
+                Snackbar.make(view, "Latest hot deal is: "+message, Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
         });
@@ -202,35 +280,21 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    /**
-     * Set up the UI and background operations for chat.
-     */
-    private void setupChat() {
-        Log.i("setup", "setupChat()");
-        // Initialize the BluetoothChatService to perform bluetooth connections
-        mChatService = new BluetoothService(this);
-    }
-
-
     private void startBluetoothService(){
         deviceList = new ArrayList<BluetoothDevice>();
-        // creating bluetooth connection
-        //initilizing bluetooth connection
+        //initializing bluetooth connection
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if(bluetoothAdapter == null){
             Log.e("connection","no bluetooth radio found");
         }
-
-
-        //creating client conections
+        //creating client connection
         if (!bluetoothAdapter.isEnabled()) {
-            Log.i("connection","bluetooth not enabled");
+            Log.i("initialization","bluetooth not enabled");
             Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
         }else{
             discoverAndConnect();
         }
-
     }
 
     public void discoverAndConnect(){
@@ -244,7 +308,7 @@ public class MainActivity extends AppCompatActivity {
         filter = new IntentFilter(BluetoothDevice.ACTION_UUID);
         registerReceiver(mReceiver,filter);
 
-        mChatService = new BluetoothService(this);
+        mChatService = new BluetoothService(this,mHandler);
         Log.i("starting","about to start");
         mChatService.start();
         bluetoothAdapter.startDiscovery();
@@ -327,5 +391,10 @@ public class MainActivity extends AppCompatActivity {
             }
             return null;
         }
+    }
+
+    public void sendData(View v){
+
+        this.sendMessage("jawdahjdkas");
     }
 }

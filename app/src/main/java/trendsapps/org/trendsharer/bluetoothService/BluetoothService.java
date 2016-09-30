@@ -37,7 +37,7 @@ public class BluetoothService {
 
     // Member fields
     private final BluetoothAdapter mAdapter;
-   // private final Handler mHandler;
+    private final Handler mHandler;
     private AcceptThread mSecureAcceptThread;
     private AcceptThread mInsecureAcceptThread;
     private ConnectThread mConnectThread;
@@ -56,8 +56,9 @@ public class BluetoothService {
      * @param context The UI Activity Context
      *
      */
-    public BluetoothService(Context context) {
+    public BluetoothService(Context context, Handler handler) {
         mAdapter = BluetoothAdapter.getDefaultAdapter();
+        mHandler = handler;
         mState = STATE_NONE;
     }
 
@@ -68,9 +69,10 @@ public class BluetoothService {
      */
     private synchronized void setState(int state) {
         Log.d(TAG, "setState() " + mState + " -> " + state);
+        // Give the new state to the Handler so the UI Activity can update
+        mHandler.obtainMessage(Constants.MESSAGE_STATE_CHANGE, state, -1).sendToTarget();
         mState = state;
     }
-
 
     /**
      * Return the current connection state.
@@ -100,11 +102,6 @@ public class BluetoothService {
 
         setState(STATE_LISTEN);
 
-      /*  // Start the thread to listen on a BluetoothServerSocket
-        if (mSecureAcceptThread == null) {
-            mSecureAcceptThread = new AcceptThread(true);
-            mSecureAcceptThread.start();
-        }*/
         if (mInsecureAcceptThread == null) {
             mInsecureAcceptThread = new AcceptThread(false);
             mInsecureAcceptThread.start();
@@ -228,7 +225,7 @@ public class BluetoothService {
      * Indicate that the connection attempt failed and notify the UI Activity.
      */
     private void connectionFailed() {
-        Log.i("Connectio","Failed");
+        Log.i("Connection","Failed");
         // Send a failure message back to the Activity
         Bundle bundle = new Bundle();
         bundle.putString(Constants.TOAST, "Unable to connect device");
@@ -441,17 +438,15 @@ public class BluetoothService {
             // Keep listening to the InputStream while connected
             while (mState == STATE_CONNECTED) {
                 try {
-                 /*   i++;
+              /*   *//*   i++;
                     write((new String("Hello World" + i + "\n")).getBytes());
-                    Log.i("message","messge sent " + i);*/
-                  //  wait(300);
-                    // Read from the InputStream
-                    InputStreamReader reader = new InputStreamReader(mmInStream);
-                    BufferedReader readerBuf = new BufferedReader(reader);
+                    Log.i("message","messge sent " + i);*//*
+                  //  wait(300);*/
+                    bytes = mmInStream.read(buffer);
 
-                  //  bytes = mmInStream.read(buffer);
-                    String msg = readerBuf.readLine();
-                    Log.i("Message", msg);
+                    // Send the obtained bytes to the UI Activity
+                    mHandler.obtainMessage(Constants.MESSAGE_READ, bytes, -1, buffer)
+                            .sendToTarget();
 
 
                 } catch (
@@ -472,7 +467,9 @@ public class BluetoothService {
         public void write(byte[] buffer) {
             try {
                 mmOutStream.write(buffer);
-
+                // Share the sent message back to the UI Activity
+                mHandler.obtainMessage(Constants.MESSAGE_WRITE, -1, -1, buffer)
+                        .sendToTarget();
             } catch (IOException e) {
                 Log.e(TAG, "Exception during write", e);
             }
