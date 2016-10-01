@@ -35,9 +35,15 @@ import org.json.JSONObject;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Map;
+import java.util.Random;
+import java.util.StringTokenizer;
 import java.util.UUID;
 
+import trendsapps.org.trendsharer.JSONParser.JSONMessage;
+import trendsapps.org.trendsharer.JSONParser.JSONParser;
 import trendsapps.org.trendsharer.Model.HotDeal;
+import trendsapps.org.trendsharer.Model.Packet;
 import trendsapps.org.trendsharer.bluetoothService.BluetoothService;
 import trendsapps.org.trendsharer.bluetoothService.Constants;
 import trendsapps.org.trendsharer.fragments.AddDealsFragment;
@@ -199,15 +205,30 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-
+    /**
+     * Read message from connected device
+     * @param message
+     */
     public void readMessage(String message){
         Log.i("Message recieved", message);
         try{
             JSONObject json = new JSONObject(message);
-            String deal_t = (String)json.get("deal");
-            String details = (String)json.get("details");
-            HotDeal deal = new HotDeal(deal_t,details);
-            deal.setStoredDate(new Timestamp(new Date().getTime()));
+            JSONObject header = (JSONObject)json.get("header");
+            JSONObject body = (JSONObject) json.get("body");
+
+            int message_id = (int)header.get("messageID");
+            String device_address = (String)header.get("deviceAddress");
+            String shop = (String) body.get("shop");
+            String discount = (String) body.get("discount");
+            String content = (String)body.get("content");
+            int duration = (int)body.get("duration");
+            String timetamp = (String)body.get("timeStamp");
+
+
+            HotDeal deal = new HotDeal(message_id,shop,discount);
+            deal.setStoredDate(new Timestamp(Long.parseLong(timetamp)));
+            deal.setContent(content);
+            deal.setDuration(duration);
             DatabaseHandler handler = DatabaseHandler.getInstance(DatabaseHandler.DATABSENAME, "HotDeals", getActivity());
             handler.addDeal(deal);
         }catch(Exception e){
@@ -216,38 +237,43 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    /**
+     *
+     * create sending message and call sendMessage
+     * @param v
+     */
     public void sendData(View v){
-        JSONObject js = new JSONObject();
-        //create json object
         try {
-            js.put("deal", "deal one");
-            js.put("details",BluetoothAdapter.getDefaultAdapter().getName());
-        }catch(Exception e){
+            // creating json object
+            Random random = new Random();
+            int message_id = random.nextInt();
+            String device_address = BluetoothAdapter.getDefaultAdapter().getName();
+            String shop = "shop " + device_address;
+            String discount = "2.5";
+            String content = "This is an awesome deal";
+            int duration = 2000;
+            String timetamp = String.valueOf(new Date().getTime());
+            JSONMessage jsonMessage = new JSONMessage(message_id, device_address, shop, discount, content, duration, timetamp);
+            //sending message
+            for (int i = 0; i < 3; i++)
+                this.sendMessage(jsonMessage.getJSONMessage().toString(), mChatServiceArray[i]);
+        }catch (Exception e){
             e.printStackTrace();
         }
-
-        for(int i=0;i<3;i++)
-            this.sendMessage(js.toString(),mChatServiceArray[i]);
-
-
-
     }
-
     /**
-     * Sends a message.
+     * Sends a given message to the given bluetooth service
      *
      * @param message A string of text to send.
      */
     public void sendMessage(String message,BluetoothService service) {
         // Check that we're actually connected before trying anything
         if (service.getState() != BluetoothService.STATE_CONNECTED) {
-        //    Toast.makeText(getActivity(), R.string.not_connected, Toast.LENGTH_SHORT).show();
             Log.i("Not Connected","Message Sending");
             return;
         }
         // Check that there's actually something to send
         if (message.length() > 0) {
-            // Get the message bytes and tell the BluetoothChatService to write
             byte[] send = message.getBytes();
             service.write(send);
         }
@@ -259,7 +285,7 @@ public class MainActivity extends AppCompatActivity {
         // Performing this check in onResume() covers the case in which BT was
         // not enabled during onStart(), so we were paused to enable it...
         // onResume() will be called when ACTION_REQUEST_ENABLE activity returns.
-        for(int i=0;i<3;i++){
+        for(int i=0;i<7;i++){
             if (mChatServiceArray[i] != null) {
                 // Only if the state is STATE_NONE, do we know that we haven't started already
                 if (mChatServiceArray[i].getState() == BluetoothService.STATE_NONE) {
@@ -288,7 +314,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mChatServiceArray = new BluetoothService[3];
+        mChatServiceArray = new BluetoothService[7];
         for(int i=0;i<7;i++){
             mChatServiceArray[i] = new BluetoothService(this,mHandler,uuidArray[i]);
             Log.i("starting","chat service " + i + " is starting");
