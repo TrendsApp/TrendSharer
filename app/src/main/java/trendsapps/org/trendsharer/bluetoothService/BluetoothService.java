@@ -365,6 +365,12 @@ public class BluetoothService {
                 mmSocket.connect();
                 Log.i("Connect","Successfully connected to : " + mmDevice.toString());
             } catch (IOException e) {
+                try{
+                   /* mmSocket = (BluetoothSocket) mmDevice.getClass().getMethod("createRfcommSocket", new Class[] {int.class}).invoke(mmDevice,1);
+                    mmSocket.connect();*/
+                } catch(Exception en){
+                    Log.i("error second atempt ", en.toString());
+                }
                 try {
                     mmSocket.close();
                 } catch (IOException e2) {
