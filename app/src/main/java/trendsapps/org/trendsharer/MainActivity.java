@@ -259,7 +259,7 @@ public class MainActivity extends AppCompatActivity {
         // Performing this check in onResume() covers the case in which BT was
         // not enabled during onStart(), so we were paused to enable it...
         // onResume() will be called when ACTION_REQUEST_ENABLE activity returns.
-        for(int i=0;i<3;i++){
+        for(int i=0;i<7;i++){
             if (mChatServiceArray[i] != null) {
                 // Only if the state is STATE_NONE, do we know that we haven't started already
                 if (mChatServiceArray[i].getState() == BluetoothService.STATE_NONE) {
@@ -288,7 +288,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mChatServiceArray = new BluetoothService[3];
+        mChatServiceArray = new BluetoothService[7];
         for(int i=0;i<7;i++){
             mChatServiceArray[i] = new BluetoothService(this,mHandler,uuidArray[i]);
             Log.i("starting","chat service " + i + " is starting");
