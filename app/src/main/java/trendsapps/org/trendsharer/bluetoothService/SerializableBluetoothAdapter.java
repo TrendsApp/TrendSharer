@@ -6,7 +6,8 @@ import java.io.Serializable;
 /**
  * Created by dilan on 9/26/16.
  */
-public class SerializableBluetoothAdapter implements Serializable {
+public class
+SerializableBluetoothAdapter implements Serializable {
     BluetoothAdapter adapter;
 
     public SerializableBluetoothAdapter(BluetoothAdapter adapter){

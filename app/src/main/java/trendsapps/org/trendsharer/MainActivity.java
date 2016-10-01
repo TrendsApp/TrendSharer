@@ -211,6 +211,10 @@ public class MainActivity extends AppCompatActivity {
     public void sendData(View v){
         for(int i=0;i<3;i++)
             this.sendMessage("msg : " +  BluetoothAdapter.getDefaultAdapter().getName() ,mChatServiceArray[i]);
+
+        HotDeal deal = new HotDeal("Shop one","hellp");
+        DatabaseHandler handler = DatabaseHandler.getInstance();
+        handler.addDeal(deal);
     }
 
     @Override
