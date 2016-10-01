@@ -233,6 +233,11 @@ public class BluetoothService {
         BluetoothService.this.start();
     }
 
+    /*Generate a thread for UUID*/
+    public String uuidGen(BluetoothDevice device){
+        String UUIDSTR = "8ce255c0-200a-11e0-ac64-"+device.getAddress().replace(":","");
+        return  UUIDSTR;
+    }
 
     /**
      * This thread runs while listening for incoming connections. It behaves
@@ -243,6 +248,7 @@ public class BluetoothService {
         // The local server socket
         private final BluetoothServerSocket mmServerSocket;
         private String mSocketType;
+        private String acceptUUID;
 
         public AcceptThread(boolean secure) {
             BluetoothServerSocket tmp = null;
@@ -252,10 +258,10 @@ public class BluetoothService {
             try {
                 if (secure) {
                     tmp = mAdapter.listenUsingRfcommWithServiceRecord(NAME_SECURE,
-                            MY_UUID_SECURE);
+                            UUID.fromString("8ce255c0-200a-11e0-ac64-"+BluetoothAdapter.getDefaultAdapter().getAddress()));
                 } else {
                     tmp = mAdapter.listenUsingInsecureRfcommWithServiceRecord(
-                            NAME_INSECURE, MY_UUID_INSECURE);
+                            NAME_INSECURE, UUID.fromString("ce255c0-200a-11e0-ac64-"+BluetoothAdapter.getDefaultAdapter().getAddress().replace(":","")));
                 }
             } catch (IOException e) {
                 Log.e(TAG, "Socket Type: " + mSocketType + "listen() failed", e);
@@ -329,11 +335,15 @@ public class BluetoothService {
         private BluetoothSocket mmSocket;
         private final BluetoothDevice mmDevice;
         private String mSocketType;
+        private String UUID_String;
 
         public ConnectThread(BluetoothDevice device, boolean secure) {
             mmDevice = device;
             BluetoothSocket tmp = null;
+            UUID_String = uuidGen(mmDevice);
             mSocketType = secure ? "Secure" : "Insecure";
+
+
 
             // Get a BluetoothSocket for a connection with the
             // given BluetoothDevice
@@ -343,7 +353,7 @@ public class BluetoothService {
                             MY_UUID_SECURE);
                 } else {
                     tmp = device.createInsecureRfcommSocketToServiceRecord(
-                            MY_UUID_INSECURE);
+                            UUID.fromString(UUID_String));
                 }
             } catch (IOException e) {
                 Log.e(TAG, "Socket Type: " + mSocketType + "create() failed", e);
