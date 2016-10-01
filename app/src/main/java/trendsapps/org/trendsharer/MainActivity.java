@@ -87,6 +87,8 @@ public class MainActivity extends AppCompatActivity {
     private final String uuid6 = "3d61d75b-fafa-403a-ae8b-fb8754957fb2";
     private final String uuid7 = "1666ffca-5b99-4838-a00b-60a667d5448e";
 
+    /*Number of strings changed*/
+
     private String[] uuidArray =  {uuid1,uuid2,uuid3,uuid4,uuid5,uuid6,uuid7};
     /**
      * Temp variables
