@@ -93,7 +93,6 @@ public class MainActivity extends AppCompatActivity {
                             mChatServiceList.add(tmpService);
                             tmpService.connect(device,false);
                         }
-
                         connected = true;
                     }
                 }
