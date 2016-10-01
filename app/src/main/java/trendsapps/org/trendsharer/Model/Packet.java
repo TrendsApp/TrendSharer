@@ -1,26 +1,25 @@
 package trendsapps.org.trendsharer.Model;
 
-/**
- * Created by jawadhsr on 10/1/16.
- */
+import java.util.ArrayList;
+
 public class Packet {
 
-    private int packetId;
-    private HotDeal[] hotdeals;
+    private Header header;
+    private ArrayList<HotDeal> hotdeals;
 
-    public int getPacketId() {
-        return packetId;
+    public Header getHeader() {
+        return header;
     }
 
-    public void setPacketId(int packetId) {
-        this.packetId = packetId;
+    public void setHeader(Header header) {
+        this.header = header;
     }
 
-    public HotDeal[] getHotdeals() {
+    public ArrayList<HotDeal> getHotdeals() {
         return hotdeals;
     }
 
-    public void setHotdeals(HotDeal[] hotdeals) {
+    public void setHotdeals(ArrayList<HotDeal> hotdeals) {
         this.hotdeals = hotdeals;
     }
 }

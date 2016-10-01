@@ -4,9 +4,6 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Created by rangathara on 10/1/16.
- */
 
 public class JSONMessage {
 //    private int messageID;
@@ -16,6 +13,7 @@ public class JSONMessage {
 //    private String content;
 //    private int duration;
 //    private String timeStamp;
+
     private JSONObject header;
     private JSONObject body;
     private JSONObject message;
