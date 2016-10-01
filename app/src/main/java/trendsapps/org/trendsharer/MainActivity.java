@@ -11,6 +11,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.ParcelUuid;
 import android.os.Parcelable;
+import android.provider.ContactsContract;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentActivity;
@@ -29,9 +30,14 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import org.json.JSONObject;
+
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.UUID;
 
+import trendsapps.org.trendsharer.Model.HotDeal;
 import trendsapps.org.trendsharer.bluetoothService.BluetoothService;
 import trendsapps.org.trendsharer.bluetoothService.Constants;
 import trendsapps.org.trendsharer.fragments.AddDealsFragment;
@@ -209,11 +215,23 @@ public class MainActivity extends AppCompatActivity {
 
 
     public void sendData(View v){
+        JSONObject js = new JSONObject();
+        //create json object
+        try {
+            js.put("deal", "deal one");
+            js.put("details","details");
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+
         for(int i=0;i<3;i++)
-            this.sendMessage("msg : " +  BluetoothAdapter.getDefaultAdapter().getName() ,mChatServiceArray[i]);
+            this.sendMessage(js.toString(),mChatServiceArray[i]);
+
 
         HotDeal deal = new HotDeal("Shop one","hellp");
-        DatabaseHandler handler = DatabaseHandler.getInstance();
+        Timestamp ts = new Timestamp(System.currentTimeMillis());
+        deal.setStoredDate(new Timestamp(new Date().getTime()));
+        DatabaseHandler handler = DatabaseHandler.getInstance(DatabaseHandler.DATABSENAME, "HotDeals", getActivity());
         handler.addDeal(deal);
     }
 
