@@ -9,12 +9,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 
 import trendsapps.org.trendsharer.DatabaseHandler;
-import trendsapps.org.trendsharer.HotDeal;
+import trendsapps.org.trendsharer.Model.HotDeal;
 import trendsapps.org.trendsharer.HotDealAdapter;
 import trendsapps.org.trendsharer.R;
 
