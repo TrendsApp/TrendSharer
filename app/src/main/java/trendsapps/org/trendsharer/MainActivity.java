@@ -175,7 +175,7 @@ public class MainActivity extends AppCompatActivity {
                     String readMessage = new String(readBuf, 0, msg.arg1);
                     receivedMessage = readMessage;
 //                    mConversationArrayAdapter.add(mConnectedDeviceName + ":  " + readMessage);
-                    Log.i("Msg",readMessage);
+                    readMessage(readMessage);
                     }catch (Exception e){
                         Log.i("Error Message",e.getMessage());
                     }
@@ -200,6 +200,39 @@ public class MainActivity extends AppCompatActivity {
     };
 
 
+    public void readMessage(String message){
+        Log.i("Message recieved", message);
+        try{
+            JSONObject json = new JSONObject(message);
+            String deal_t = (String)json.get("deal");
+            String details = (String)json.get("details");
+            HotDeal deal = new HotDeal(deal_t,details);
+            deal.setStoredDate(new Timestamp(new Date().getTime()));
+            DatabaseHandler handler = DatabaseHandler.getInstance(DatabaseHandler.DATABSENAME, "HotDeals", getActivity());
+            handler.addDeal(deal);
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+
+    }
+
+    public void sendData(View v){
+        JSONObject js = new JSONObject();
+        //create json object
+        try {
+            js.put("deal", "deal one");
+            js.put("details",BluetoothAdapter.getDefaultAdapter().getName());
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+
+        for(int i=0;i<3;i++)
+            this.sendMessage(js.toString(),mChatServiceArray[i]);
+
+
+
+    }
+
     /**
      * Sends a message.
      *
@@ -218,28 +251,6 @@ public class MainActivity extends AppCompatActivity {
             byte[] send = message.getBytes();
             service.write(send);
         }
-    }
-
-
-    public void sendData(View v){
-        JSONObject js = new JSONObject();
-        //create json object
-        try {
-            js.put("deal", "deal one");
-            js.put("details","details");
-        }catch(Exception e){
-            e.printStackTrace();
-        }
-
-        for(int i=0;i<7;i++)
-            this.sendMessage(js.toString(),mChatServiceArray[i]);
-
-
-        HotDeal deal = new HotDeal("Shop one","help");
-        Timestamp ts = new Timestamp(System.currentTimeMillis());
-        deal.setStoredDate(new Timestamp(new Date().getTime()));
-        DatabaseHandler handler = DatabaseHandler.getInstance(DatabaseHandler.DATABSENAME, "HotDeals", getActivity());
-        handler.addDeal(deal);
     }
 
     @Override
