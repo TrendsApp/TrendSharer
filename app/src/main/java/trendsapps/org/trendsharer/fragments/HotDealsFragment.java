@@ -87,7 +87,7 @@ public class HotDealsFragment extends Fragment {
 
 
     public void updateList(){
-        hotDealsDataBase = new DatabaseHandler(DatabaseHandler.DATABSENAME, "HotDeals", getActivity());
+        hotDealsDataBase = DatabaseHandler.getInstance(DatabaseHandler.DATABSENAME, "HotDeals", getActivity());
 
         ArrayList<HotDeal> dealsTemp = hotDealsDataBase.getDeals();
         int i = 0;
