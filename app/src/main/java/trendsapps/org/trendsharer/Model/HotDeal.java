@@ -1,4 +1,4 @@
-package trendsapps.org.trendsharer;
+package trendsapps.org.trendsharer.Model;
 
 
 import android.graphics.Bitmap;
@@ -7,7 +7,6 @@ import android.graphics.BitmapFactory;
 import java.io.ByteArrayOutputStream;
 import java.sql.Timestamp;
 import java.util.Date;
-import java.util.StringTokenizer;
 
 public class HotDeal {
     private int ID;

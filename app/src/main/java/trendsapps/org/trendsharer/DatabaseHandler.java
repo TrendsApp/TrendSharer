@@ -9,10 +9,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import java.sql.Timestamp;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
+
+import trendsapps.org.trendsharer.Model.HotDeal;
 
 public class DatabaseHandler {
 
