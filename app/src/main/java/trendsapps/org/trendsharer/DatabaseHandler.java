@@ -9,10 +9,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import java.sql.Timestamp;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
+
+import trendsapps.org.trendsharer.Model.HotDeal;
 
 public class DatabaseHandler {
 
@@ -24,8 +23,9 @@ public class DatabaseHandler {
     public DatabaseHandler(SQLiteDatabase database){
       this.hotDealsDataBase = database;
     }
+    private static DatabaseHandler instance = null;
 
-    public DatabaseHandler(String databaseName,String tableName,Activity activity){
+    private DatabaseHandler(String databaseName,String tableName,Activity activity){
         try {
             this.hotDealsDataBase = activity.openOrCreateDatabase(databaseName, Context.MODE_PRIVATE,null);
             Log.i("Database Initialized","Database initialization completed ");
@@ -36,6 +36,13 @@ public class DatabaseHandler {
         dealsTableName = tableName;
         String createTableQuery = "CREATE TABLE IF NOT EXISTS "+dealsTableName+" (ID integer primary key AUTOINCREMENT,Shop VARCHAR,Discount VARCHAR,Content VARCHAR,Duration INTEGER,Photo BLOB,Timestamp DATETIME DEFAULT CURRENT_TIMESTAMP);";
         hotDealsDataBase.execSQL(createTableQuery);
+    }
+
+    public static DatabaseHandler getInstance(String databaseName,String tableName,Activity activity) {
+        if(instance == null) {
+            instance = new DatabaseHandler(databaseName,tableName, activity);
+        }
+        return instance;
     }
 
     public void addDeal(HotDeal newDeal){

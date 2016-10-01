@@ -5,11 +5,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.TextClock;
 import android.widget.TextView;
 
 import java.util.ArrayList;
-import java.util.StringTokenizer;
+
+import trendsapps.org.trendsharer.Model.HotDeal;
 
 /**
  * Created by jawadhsr on 8/1/16.

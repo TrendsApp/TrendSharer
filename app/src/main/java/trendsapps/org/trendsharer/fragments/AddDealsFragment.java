@@ -4,13 +4,11 @@ package trendsapps.org.trendsharer.fragments;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ComponentName;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
-import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -19,22 +17,17 @@ import android.os.Environment;
 import android.os.Parcelable;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.sql.Timestamp;
@@ -43,7 +36,7 @@ import java.util.Date;
 import java.util.List;
 
 import trendsapps.org.trendsharer.DatabaseHandler;
-import trendsapps.org.trendsharer.HotDeal;
+import trendsapps.org.trendsharer.Model.HotDeal;
 import trendsapps.org.trendsharer.R;
 
 public class AddDealsFragment extends Fragment {
@@ -84,7 +77,7 @@ public class AddDealsFragment extends Fragment {
         addSubmitButton(rootView);
         addHideKeyBoardButton(rootView);
         addTakeASnapButton(rootView);
-        hotDealsDataBase = new DatabaseHandler(DatabaseHandler.DATABSENAME, "HotDeals", getActivity());
+        hotDealsDataBase = DatabaseHandler.getInstance(DatabaseHandler.DATABSENAME, "HotDeals", getActivity());
         return rootView;
     }
 

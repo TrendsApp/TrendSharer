@@ -9,12 +9,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 
 import trendsapps.org.trendsharer.DatabaseHandler;
-import trendsapps.org.trendsharer.HotDeal;
+import trendsapps.org.trendsharer.Model.HotDeal;
 import trendsapps.org.trendsharer.HotDealAdapter;
 import trendsapps.org.trendsharer.R;
 
@@ -87,7 +86,7 @@ public class HotDealsFragment extends Fragment {
 
 
     public void updateList(){
-        hotDealsDataBase = new DatabaseHandler(DatabaseHandler.DATABSENAME, "HotDeals", getActivity());
+        hotDealsDataBase = DatabaseHandler.getInstance(DatabaseHandler.DATABSENAME, "HotDeals", getActivity());
 
         ArrayList<HotDeal> dealsTemp = hotDealsDataBase.getDeals();
         int i = 0;
