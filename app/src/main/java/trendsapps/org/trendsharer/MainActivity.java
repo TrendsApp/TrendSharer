@@ -82,7 +82,14 @@ public class MainActivity extends AppCompatActivity {
     private final String uuid1 = "8ce255c0-200a-11e0-ac64-0800200c9a66";
     private final String uuid2 = "8ce255c0-200a-11e0-ac64-0800200c8a55";
     private final String uuid3 = "8ce255c0-200a-4df4-ac64-0800200c8a44";
-    private String[] uuidArray =  {uuid1,uuid2,uuid3};
+    private final String uuid4 = "7bc24b5f-416c-4c4f-aa3f-9e4caf8354a2";
+    private final String uuid5 = "a561e540-c44b-46cc-a9f1-b07c546ee1e2";
+    private final String uuid6 = "3d61d75b-fafa-403a-ae8b-fb8754957fb2";
+    private final String uuid7 = "1666ffca-5b99-4838-a00b-60a667d5448e";
+
+    /*Number of strings changed*/
+
+    private String[] uuidArray =  {uuid1,uuid2,uuid3,uuid4,uuid5,uuid6,uuid7};
     /**
      * Temp variables
      */
@@ -246,9 +253,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-
-
-
     @Override
     protected void onResume() {
         super.onResume();
@@ -285,7 +289,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         mChatServiceArray = new BluetoothService[3];
-        for(int i=0;i<3;i++){
+        for(int i=0;i<7;i++){
             mChatServiceArray[i] = new BluetoothService(this,mHandler,uuidArray[i]);
             Log.i("starting","chat service " + i + " is starting");
         }
@@ -365,7 +369,7 @@ public class MainActivity extends AppCompatActivity {
         filter = new IntentFilter(BluetoothDevice.ACTION_UUID);
         registerReceiver(mReceiver,filter);
 
-        for(int i=0;i<3;i++){
+        for(int i=0;i<7;i++){
             mChatServiceArray[i].start();
         }
         bluetoothAdapter.startDiscovery();
