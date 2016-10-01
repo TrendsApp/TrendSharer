@@ -65,6 +65,7 @@ public class MainActivity extends AppCompatActivity {
      */
     private BluetoothService mChatService = null;
 
+    private ArrayList<BluetoothService> mChatServiceList;
 
     /**
      * Temp variables
@@ -77,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
-            Log.i("Connect","#######");
+            Log.i("Discovery","Start discovery");
             // When discovery finds a device
             if (BluetoothDevice.ACTION_FOUND.equals(action)) {
                 // Get the BluetoothDevice object from the Intent
@@ -87,13 +88,19 @@ public class MainActivity extends AppCompatActivity {
                 if (device.getBondState() != BluetoothDevice.BOND_BONDED) {
                    // mNewDevicesArrayAdapter.add(device.getName() + "\n" + device.getAddress());
                     if(device.getAddress().equals(acceptingDeviceAddress) && !connected){
-                        mChatService.connect(device,false);
+                        BluetoothService tmpService = new BluetoothService(getActivity(),mHandler);
+                        if(mChatServiceList.size() < 7){
+                            mChatServiceList.add(tmpService);
+                            tmpService.connect(device,false);
+                        }
+
                         connected = true;
                     }
                 }
                 // When discovery is finished, change the Activity title
             } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
-                Log.i("Discovery","####  Finished  ####");
+                Log.i("Discovery","Finished discovery");
+                bluetoothAdapter.startDiscovery();
                /* if (mNewDevicesArrayAdapter.getCount() == 0) {
                     String noDevices = getResources().getText(R.string.none_found).toString();
                     mNewDevicesArrayAdapter.add(noDevices);
