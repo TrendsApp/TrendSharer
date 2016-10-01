@@ -28,11 +28,9 @@ public class HotDealAdapter extends RecyclerView.Adapter<HotDealAdapter.ViewHold
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        holder.dateTime.setText(hotdeals.get(position).getStoredDate().toString());
         holder.shopName.setText(hotdeals.get(position).getShopName());
         holder.discount.setText(hotdeals.get(position).getDiscount());
         holder.content.setText(hotdeals.get(position).getContent());
-        boolean hasImg = hotdeals.get(position).hasImageinDeal();
         if(hotdeals.get(position).getImageAsBitMap()!= null)
             holder.viewImage.setImageBitmap(hotdeals.get(position).getImageAsBitMap());
         System.out.println("gfgsfsdfs");
@@ -58,7 +56,6 @@ public class HotDealAdapter extends RecyclerView.Adapter<HotDealAdapter.ViewHold
             shopName = (TextView) itemView.findViewById(R.id.deal_shop_name);
             discount = (TextView) itemView.findViewById(R.id.deal_discount);
             content = (TextView) itemView.findViewById(R.id.deal_content);
-            dateTime = (TextView) itemView.findViewById(R.id.deal_data_time);
             viewImage = (ImageView) itemView.findViewById(R.id.deal_view_image);
         }
     }
