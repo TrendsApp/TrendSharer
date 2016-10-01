@@ -61,6 +61,7 @@ public class MainActivity extends AppCompatActivity {
      * The {@link ViewPager} that will host the section contents.
      */
     private ViewPager mViewPager;
+    private int tlimit = 7;
     private Button sendButton;
     private int REQUEST_ENABLE_BT = 34;
     BluetoothAdapter bluetoothAdapter;
@@ -110,7 +111,7 @@ public class MainActivity extends AppCompatActivity {
                 // If it's already paired, skip it, because it's been listed already
                 if (device.getBondState() != BluetoothDevice.BOND_BONDED) {
                    // mNewDevicesArrayAdapter.add(device.getName() + "\n" + device.getAddress());
-                    for(int i=0;i<3;i++){
+                    for(int i=0;i<tlimit;i++){
                         if(mChatServiceArray[i].getState() == BluetoothService.STATE_LISTEN){
                             Log.i("Connect","Connecting device: " + device.getName() + " to: " + i);
                             mChatServiceArray[i].connect(device,false);
@@ -231,7 +232,7 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        for(int i=0;i<7;i++)
+        for(int i=0;i<tlimit;i++)
             this.sendMessage(js.toString(),mChatServiceArray[i]);
 
 
@@ -248,7 +249,7 @@ public class MainActivity extends AppCompatActivity {
         // Performing this check in onResume() covers the case in which BT was
         // not enabled during onStart(), so we were paused to enable it...
         // onResume() will be called when ACTION_REQUEST_ENABLE activity returns.
-        for(int i=0;i<3;i++){
+        for(int i=0;i<tlimit;i++){
             if (mChatServiceArray[i] != null) {
                 // Only if the state is STATE_NONE, do we know that we haven't started already
                 if (mChatServiceArray[i].getState() == BluetoothService.STATE_NONE) {
@@ -277,8 +278,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mChatServiceArray = new BluetoothService[3];
-        for(int i=0;i<7;i++){
+        mChatServiceArray = new BluetoothService[tlimit];
+        for(int i=0;i<tlimit;i++){
             mChatServiceArray[i] = new BluetoothService(this,mHandler,uuidArray[i]);
             Log.i("starting","chat service " + i + " is starting");
         }
@@ -316,7 +317,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        for(int i=0;i<3;i++){
+        for(int i=0;i<tlimit;i++){
             if (mChatServiceArray[i] != null) {
                 mChatServiceArray[i] .stop();
             }
@@ -358,7 +359,7 @@ public class MainActivity extends AppCompatActivity {
         filter = new IntentFilter(BluetoothDevice.ACTION_UUID);
         registerReceiver(mReceiver,filter);
 
-        for(int i=0;i<7;i++){
+        for(int i=0;i<tlimit;i++){
             mChatServiceArray[i].start();
         }
         bluetoothAdapter.startDiscovery();
