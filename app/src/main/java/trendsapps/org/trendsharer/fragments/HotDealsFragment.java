@@ -27,7 +27,6 @@ public class HotDealsFragment extends Fragment {
     private RecyclerView recyclerView;
     private HotDealAdapter hotDealAdapter;
     private ArrayList<HotDeal> hotdeals = new ArrayList<>();
-    private Button refreshDeals ;
 
     private SwipeRefreshLayout mSwipeRefreshLayout ;
     public HotDealsFragment() {

@@ -6,6 +6,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.CountDownTimer;
 import android.util.Log;
 
 import java.sql.Timestamp;
@@ -36,6 +37,7 @@ public class DatabaseHandler {
         dealsTableName = tableName;
         String createTableQuery = "CREATE TABLE IF NOT EXISTS "+dealsTableName+" (ID integer primary key AUTOINCREMENT,Shop VARCHAR,Discount VARCHAR,Content VARCHAR,Duration INTEGER,Photo BLOB,Timestamp DATETIME DEFAULT CURRENT_TIMESTAMP);";
         hotDealsDataBase.execSQL(createTableQuery);
+        timerToClearDB(120000); //Timer has been set to 2 minutes
     }
 
     public static DatabaseHandler getInstance(String databaseName,String tableName,Activity activity) {
@@ -108,5 +110,24 @@ public class DatabaseHandler {
     }
     public SQLiteDatabase getHotDealsDataBase(){
         return getHotDealsDataBase();
+    }
+
+    private void clearDatabase(){
+        hotDealsDataBase.delete(dealsTableName,null,null);
+        Log.i("DB Handler","DB clear timer triggered and DB has been cleared");
+    }
+
+    private void timerToClearDB(final int timerInSeconds){
+        new CountDownTimer(timerInSeconds, 1000) {
+            @Override
+            public void onTick(long l) {
+            }
+
+            @Override
+            public void onFinish() {
+                clearDatabase();
+                timerToClearDB(timerInSeconds);
+            }
+        }.start();
     }
 }
