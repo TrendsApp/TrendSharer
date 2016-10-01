@@ -70,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
     /**
      * Temp variables
      */
-    private final String acceptingDeviceAddress = "8C:BE:BE:79:68:13"; // kitta phone
+  //  private final String acceptingDeviceAddress = "8C:BE:BE:79:68:13"; // kitta phone
 
 
     private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
@@ -87,14 +87,16 @@ public class MainActivity extends AppCompatActivity {
                 // If it's already paired, skip it, because it's been listed already
                 if (device.getBondState() != BluetoothDevice.BOND_BONDED) {
                    // mNewDevicesArrayAdapter.add(device.getName() + "\n" + device.getAddress());
+                    BluetoothService tmpService = new BluetoothService(getActivity(),mHandler);
+                    if(mChatServiceList.size() < 4){
+                        Log.i("Connect","Connecting device: " + device.getName());
+                        mChatServiceList.add(tmpService);
+                        tmpService.connect(device,false);
+                    }/*
                     if(device.getAddress().equals(acceptingDeviceAddress) && !connected){
-                        BluetoothService tmpService = new BluetoothService(getActivity(),mHandler);
-                        if(mChatServiceList.size() < 7){
-                            mChatServiceList.add(tmpService);
-                            tmpService.connect(device,false);
-                        }
+
                         connected = true;
-                    }
+                    }*/
                 }
                 // When discovery is finished, change the Activity title
             } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
@@ -124,6 +126,7 @@ public class MainActivity extends AppCompatActivity {
                     Log.i("State","changed");
                     switch (msg.arg1) {
                         case BluetoothService.STATE_CONNECTED:
+                            Log.i("Connected","#######");
                           /*  setStatus(getString(R.string.title_connected_to, mConnectedDeviceName));
                             mConversationArrayAdapter.clear();
                             break;*/
@@ -186,9 +189,9 @@ public class MainActivity extends AppCompatActivity {
      *
      * @param message A string of text to send.
      */
-    public void sendMessage(String message) {
+    public void sendMessage(String message,BluetoothService service) {
         // Check that we're actually connected before trying anything
-        if (mChatService.getState() != BluetoothService.STATE_CONNECTED) {
+        if (service.getState() != BluetoothService.STATE_CONNECTED) {
         //    Toast.makeText(getActivity(), R.string.not_connected, Toast.LENGTH_SHORT).show();
             Log.i("Not Connected","Message Sending");
             return;
@@ -197,10 +200,19 @@ public class MainActivity extends AppCompatActivity {
         if (message.length() > 0) {
             // Get the message bytes and tell the BluetoothChatService to write
             byte[] send = message.getBytes();
-            mChatService.write(send);
+            service.write(send);
         }
     }
 
+
+    public void sendData(View v){
+
+        for (BluetoothService service:
+             mChatServiceList) {
+            this.sendMessage("msg : " +  BluetoothAdapter.getDefaultAdapter().getName() ,service);
+        }
+
+    }
 
     @Override
     protected void onResume() {
@@ -278,6 +290,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void startBluetoothService(){
+
+        //initializing mchatservices
+        mChatServiceList = new ArrayList<BluetoothService>();
+
         deviceList = new ArrayList<BluetoothDevice>();
         //initializing bluetooth connection
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -391,8 +407,5 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void sendData(View v){
 
-        this.sendMessage("jawdahjdkas");
-    }
 }
