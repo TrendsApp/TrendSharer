@@ -32,14 +32,14 @@ public class BluetoothService {
     // Unique UUID for this application
     private static final UUID MY_UUID_SECURE =
             UUID.fromString("fa87c0d0-afac-11de-8a39-0800200c9a66");
-    private static final UUID MY_UUID_INSECURE =
+    private static  UUID MY_UUID_INSECURE =
             UUID.fromString("8ce255c0-200a-11e0-ac64-0800200c9a66");
 
     // Member fields
     private final BluetoothAdapter mAdapter;
     private final Handler mHandler;
     private AcceptThread mSecureAcceptThread;
-    private static AcceptThread mInsecureAcceptThread;
+    private AcceptThread mInsecureAcceptThread;
     private ConnectThread mConnectThread;
     private ConnectedThread mConnectedThread;
     private int mState;
@@ -56,7 +56,8 @@ public class BluetoothService {
      * @param context The UI Activity Context
      *
      */
-    public BluetoothService(Context context, Handler handler) {
+    public BluetoothService(Context context, Handler handler, String uuid) {
+        this.MY_UUID_INSECURE = UUID.fromString(uuid);
         mAdapter = BluetoothAdapter.getDefaultAdapter();
         mHandler = handler;
         mState = STATE_NONE;
@@ -173,6 +174,7 @@ public class BluetoothService {
         mConnectedThread.start();
 
         setState(STATE_CONNECTED);
+        Log.i("Connected #",device.getName());
     }
 
     /**
@@ -347,6 +349,7 @@ public class BluetoothService {
                 }
             } catch (IOException e) {
                 Log.e(TAG, "Socket Type: " + mSocketType + "create() failed", e);
+                connectionFailed();
             }
             mmSocket = tmp;
         }
