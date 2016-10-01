@@ -63,10 +63,20 @@ public class MainActivity extends AppCompatActivity {
     /**
      * Member object for the chat services
      */
-    private BluetoothService mChatService = null;
 
-    private ArrayList<BluetoothService> mChatServiceList;
 
+    private BluetoothService[] mChatServiceArray;
+
+
+
+
+    /**
+     * UUIDs
+     */
+    private final String uuid1 = "8ce255c0-200a-11e0-ac64-0800200c9a66";
+    private final String uuid2 = "8ce255c0-200a-11e0-ac64-0800200c8a55";
+    private final String uuid3 = "8ce255c0-200a-4df4-ac64-0800200c8a44";
+    private String[] uuidArray =  {uuid1,uuid2,uuid3};
     /**
      * Temp variables
      */
@@ -87,25 +97,18 @@ public class MainActivity extends AppCompatActivity {
                 // If it's already paired, skip it, because it's been listed already
                 if (device.getBondState() != BluetoothDevice.BOND_BONDED) {
                    // mNewDevicesArrayAdapter.add(device.getName() + "\n" + device.getAddress());
-                    BluetoothService tmpService = new BluetoothService(getActivity(),mHandler);
-                    if(mChatServiceList.size() < 4){
-                        Log.i("Connect","Connecting device: " + device.getName());
-                        mChatServiceList.add(tmpService);
-                        tmpService.connect(device,false);
-                    }/*
-                    if(device.getAddress().equals(acceptingDeviceAddress) && !connected){
-
-                        connected = true;
-                    }*/
+                    for(int i=0;i<3;i++){
+                        if(mChatServiceArray[i].getState() == BluetoothService.STATE_LISTEN){
+                            Log.i("Connect","Connecting device: " + device.getName() + " to: " + i);
+                            mChatServiceArray[i].connect(device,false);
+                            break;
+                        }
+                    }
                 }
                 // When discovery is finished, change the Activity title
             } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
                 Log.i("Discovery","Finished discovery");
                 bluetoothAdapter.startDiscovery();
-               /* if (mNewDevicesArrayAdapter.getCount() == 0) {
-                    String noDevices = getResources().getText(R.string.none_found).toString();
-                    mNewDevicesArrayAdapter.add(noDevices);
-                }*/
             }
         }
     };
@@ -206,12 +209,12 @@ public class MainActivity extends AppCompatActivity {
 
 
     public void sendData(View v){
+        for(int i=0;i<3;i++)
+            this.sendMessage("msg : " +  BluetoothAdapter.getDefaultAdapter().getName() ,mChatServiceArray[i]);
 
-        for (BluetoothService service:
-             mChatServiceList) {
-            this.sendMessage("msg : " +  BluetoothAdapter.getDefaultAdapter().getName() ,service);
-        }
-
+        HotDeal deal = new HotDeal("Shop one","hellp");
+        DatabaseHandler handler = DatabaseHandler.getInstance();
+        handler.addDeal(deal);
     }
 
     @Override
@@ -220,13 +223,16 @@ public class MainActivity extends AppCompatActivity {
         // Performing this check in onResume() covers the case in which BT was
         // not enabled during onStart(), so we were paused to enable it...
         // onResume() will be called when ACTION_REQUEST_ENABLE activity returns.
-        if (mChatService != null) {
-            // Only if the state is STATE_NONE, do we know that we haven't started already
-            if (mChatService.getState() == BluetoothService.STATE_NONE) {
-                // Start the Bluetooth chat services
-                mChatService.start();
+        for(int i=0;i<3;i++){
+            if (mChatServiceArray[i] != null) {
+                // Only if the state is STATE_NONE, do we know that we haven't started already
+                if (mChatServiceArray[i].getState() == BluetoothService.STATE_NONE) {
+                    // Start the Bluetooth chat services
+                    mChatServiceArray[i].start();
+                }
             }
         }
+
         ensureDiscoverable();
     }
 
@@ -245,6 +251,14 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        mChatServiceArray = new BluetoothService[3];
+        for(int i=0;i<3;i++){
+            mChatServiceArray[i] = new BluetoothService(this,mHandler,uuidArray[i]);
+            Log.i("starting","chat service " + i + " is starting");
+        }
+
+
         setContentView(R.layout.activity_main);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -277,8 +291,10 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (mChatService != null) {
-            mChatService.stop();
+        for(int i=0;i<3;i++){
+            if (mChatServiceArray[i] != null) {
+                mChatServiceArray[i] .stop();
+            }
         }
 
         if (bluetoothAdapter != null) {
@@ -290,10 +306,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void startBluetoothService(){
-
-        //initializing mchatservices
-        mChatServiceList = new ArrayList<BluetoothService>();
-
         deviceList = new ArrayList<BluetoothDevice>();
         //initializing bluetooth connection
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -321,9 +333,9 @@ public class MainActivity extends AppCompatActivity {
         filter = new IntentFilter(BluetoothDevice.ACTION_UUID);
         registerReceiver(mReceiver,filter);
 
-        mChatService = new BluetoothService(this,mHandler);
-        Log.i("starting","about to start");
-        mChatService.start();
+        for(int i=0;i<3;i++){
+            mChatServiceArray[i].start();
+        }
         bluetoothAdapter.startDiscovery();
 
     }
