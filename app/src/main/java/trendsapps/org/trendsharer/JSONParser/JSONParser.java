@@ -13,6 +13,19 @@ import trendsapps.org.trendsharer.Model.HotDeal;
 public class JSONParser {
 
 
+    private static JSONParser jsonParser;
+
+    private JSONParser(){
+
+    }
+
+    public static JSONParser getInstance(){
+        if(jsonParser == null ){
+            jsonParser = new JSONParser();
+        }
+        return jsonParser;
+    }
+
     private JSONObject HotDealtoJSON(HotDeal object){
         JSONObject hotDeal= null;
         try {

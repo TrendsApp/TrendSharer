@@ -9,8 +9,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.os.Handler;
 
 import java.util.ArrayList;
+//import java.util.logging.Handler;
+import java.util.logging.LogRecord;
 
 import trendsapps.org.trendsharer.DatabaseHandler;
 import trendsapps.org.trendsharer.Model.HotDeal;
@@ -27,10 +30,19 @@ public class HotDealsFragment extends Fragment {
     private RecyclerView recyclerView;
     private HotDealAdapter hotDealAdapter;
     private ArrayList<HotDeal> hotdeals = new ArrayList<>();
+    Handler handler = new Handler();
 
     private SwipeRefreshLayout mSwipeRefreshLayout ;
     public HotDealsFragment() {
     }
+    /*Runnable update the list*/
+    public final Runnable runnable = new Runnable() {
+
+        @Override
+        public void run() {
+            updateList();
+        }
+    };
 
     /**
      * Returns a new instance of this fragment for the given section
@@ -75,11 +87,16 @@ public class HotDealsFragment extends Fragment {
         //String has to be replaced with HotDeal object.
 
 
+        handler.postDelayed(runnable, 500);
         return rootView;
+
+
+
     }
 
     public void onResume(){
         super.onResume();
+        handler.postDelayed(runnable, 500);
         recyclerView.setAdapter(new HotDealAdapter(hotdeals));
     }
 

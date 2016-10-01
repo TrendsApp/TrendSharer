@@ -174,6 +174,7 @@ public class MainActivity extends AppCompatActivity {
                     // construct a string from the valid bytes in the buffer
                     try{
                     String readMessage = new String(readBuf, 0, msg.arg1);
+                        readMessage(readMessage);
                     receivedMessage = readMessage;
 //                    mConversationArrayAdapter.add(mConnectedDeviceName + ":  " + readMessage);
                     Log.i("Msg",readMessage);
@@ -201,6 +202,42 @@ public class MainActivity extends AppCompatActivity {
     };
 
 
+    public void readMessage(String message){
+        Log.i("Message recieved", message);
+        try{
+            JSONObject json = new JSONObject(message);
+            String deal_t = (String)json.get("deal");
+            String details = (String)json.get("details");
+            HotDeal deal = new HotDeal(deal_t,details);
+            deal.setStoredDate(new Timestamp(new Date().getTime()));
+            DatabaseHandler handler = DatabaseHandler.getInstance(DatabaseHandler.DATABSENAME, "HotDeals", getActivity());
+            handler.addDeal(deal);
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+
+    }
+
+    public void sendData(View v){
+        try {
+            // creating json object
+            Random random = new Random();
+            int message_id = random.nextInt();
+            String device_address = BluetoothAdapter.getDefaultAdapter().getName();
+            String shop = "shop " + device_address;
+            String discount = "2.5";
+            String content = "This is an awesome deal";
+            int duration = 2000;
+            String timetamp = String.valueOf(new Date().getTime());
+            JSONMessage jsonMessage = new JSONMessage(message_id, device_address, shop, discount, content, duration, timetamp);
+            //sending message
+            for (int i = 0; i < 3; i++)
+                this.sendMessage(jsonMessage.getJSONMessage().toString(), mChatServiceArray[i]);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
     /**
      * Sends a message.
      *
@@ -219,28 +256,6 @@ public class MainActivity extends AppCompatActivity {
             byte[] send = message.getBytes();
             service.write(send);
         }
-    }
-
-
-    public void sendData(View v){
-        JSONObject js = new JSONObject();
-        //create json object
-        try {
-            js.put("deal", "deal one");
-            js.put("details","details");
-        }catch(Exception e){
-            e.printStackTrace();
-        }
-
-        for(int i=0;i<tlimit;i++)
-            this.sendMessage(js.toString(),mChatServiceArray[i]);
-
-
-        HotDeal deal = new HotDeal("Shop one","help");
-        Timestamp ts = new Timestamp(System.currentTimeMillis());
-        deal.setStoredDate(new Timestamp(new Date().getTime()));
-        DatabaseHandler handler = DatabaseHandler.getInstance(DatabaseHandler.DATABSENAME, "HotDeals", getActivity());
-        handler.addDeal(deal);
     }
 
     @Override
