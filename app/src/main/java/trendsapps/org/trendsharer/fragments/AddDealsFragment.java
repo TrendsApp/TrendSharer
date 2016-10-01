@@ -84,7 +84,7 @@ public class AddDealsFragment extends Fragment {
         addSubmitButton(rootView);
         addHideKeyBoardButton(rootView);
         addTakeASnapButton(rootView);
-        hotDealsDataBase = new DatabaseHandler(DatabaseHandler.DATABSENAME, "HotDeals", getActivity());
+        hotDealsDataBase = DatabaseHandler.getInstance(DatabaseHandler.DATABSENAME, "HotDeals", getActivity());
         return rootView;
     }
 
