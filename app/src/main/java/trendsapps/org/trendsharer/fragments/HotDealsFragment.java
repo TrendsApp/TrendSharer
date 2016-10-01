@@ -57,6 +57,13 @@ public class HotDealsFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         mSwipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.swipeRefreshLayout);
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+                                                     @Override
+                                                     public void onRefresh() {
+                                                         updateList();
+                                                         mSwipeRefreshLayout.setRefreshing(false);
+                                                     }
+                                                 });
 //
 //        mSwipeRefreshLayout.OnRefreshListener(new SwipeRefreshLayout.OnRefreshListener(){
 //
@@ -88,28 +95,8 @@ public class HotDealsFragment extends Fragment {
             hotdeals.add(dealsTemp.get(i));
             i++;
         }
-
         hotDealAdapter = new HotDealAdapter(hotdeals);
         recyclerView.setAdapter(hotDealAdapter);
-
-//
-//        hotDealsDataBase = new DatabaseHandler(DatabaseHandler.DATABSENAME, "HotDeals", getActivity());
-//
-//        ArrayList<HotDeal> dealsTemp = hotDealsDataBase.getDeals();
-//        int i = 0;
-//        while (i < dealsTemp.size()) {
-//            hotdeals.add(dealsTemp.get(i));
-//            i++;
-//        }
-//        hotDealAdapter = new HotDealAdapter(hotdeals);
-//        recyclerView.setAdapter(hotDealAdapter);
-
+        hotdeals = new ArrayList<HotDeal>();
     }
-
-    public void update(){
-
-    }
-
-
-
 }
