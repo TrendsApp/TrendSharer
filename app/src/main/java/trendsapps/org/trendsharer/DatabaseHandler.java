@@ -124,6 +124,7 @@ public class DatabaseHandler {
             @Override
             public void onFinish() {
                 clearDatabase();
+                latestDeal = "Sorry, no deals has been added :(";
                 timerToClearDB(timerInSeconds);
             }
         }.start();
