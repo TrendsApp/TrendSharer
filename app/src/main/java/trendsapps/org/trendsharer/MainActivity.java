@@ -7,6 +7,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.Message;
 import android.os.ParcelUuid;
@@ -38,6 +39,7 @@ import java.util.Date;
 import java.util.Map;
 import java.util.Random;
 import java.util.StringTokenizer;
+import java.util.Timer;
 import java.util.UUID;
 
 import trendsapps.org.trendsharer.JSONParser.JSONMessage;
@@ -155,7 +157,8 @@ public class MainActivity extends AppCompatActivity {
                             mConversationArrayAdapter.clear();
                             break;*/
                             // Make a toast
-//                            Toast.makeText(this,"Device Connected with another",Toast.LENGTH_LONG);
+                            Toast.makeText(getApplicationContext(),"Device Connected with another",Toast.LENGTH_LONG);
+                            sendData(getCurrentFocus());
                             break;
                         case BluetoothService.STATE_CONNECTING:
                             /*setStatus(R.string.title_connecting);
@@ -247,23 +250,47 @@ public class MainActivity extends AppCompatActivity {
      */
     public void sendData(View v){
         try {
+            handler = DatabaseHandler.getInstance(DatabaseHandler.DATABSENAME, "HotDeals", getActivity());
+            ArrayList<HotDeal> hdarrl = new ArrayList<HotDeal>();
+
+            hdarrl = handler.getDeals();
+
+            int i = 0;
+            while (i < hdarrl.size()) {
+
+                Random random = new Random();
+                int message_id = random.nextInt();
+                String device_address = BluetoothAdapter.getDefaultAdapter().getName();
+                String shop = hdarrl.get(i).getShopName() + device_address;
+                String discount = hdarrl.get(i).getDiscount();
+                String content = hdarrl.get(i).getContent();
+                int duration = hdarrl.get(i).getDuration();
+                String timestamp = String.valueOf(new Date().getTime());
+                JSONMessage jsonMessage = new JSONMessage(message_id, device_address, shop, discount, content, duration, timestamp);
+                //sending message
+                for (int j = 0; j < tlimit; j++)
+                    this.sendMessage(jsonMessage.getJSONMessage().toString(), mChatServiceArray[j]);
+
+                i++;
+            }
             // creating json object
-            Random random = new Random();
-            int message_id = random.nextInt();
-            String device_address = BluetoothAdapter.getDefaultAdapter().getName();
-            String shop = "shop " + device_address;
-            String discount = "2.5";
-            String content = "This is an awesome deal";
-            int duration = 2000;
-            String timetamp = String.valueOf(new Date().getTime());
-            JSONMessage jsonMessage = new JSONMessage(message_id, device_address, shop, discount, content, duration, timetamp);
-            //sending message
-            for (int i = 0; i < tlimit; i++)
-                this.sendMessage(jsonMessage.getJSONMessage().toString(), mChatServiceArray[i]);
+//            Random random = new Random();
+//            int message_id = random.nextInt();
+//            String device_address = BluetoothAdapter.getDefaultAdapter().getName();
+//            String shop = "shop " + device_address;
+//            String discount = "2.5";
+//            String content = "This is an awesome deal";
+//            int duration = 2000;
+//            String timetamp = String.valueOf(new Date().getTime());
+//            JSONMessage jsonMessage = new JSONMessage(message_id, device_address, shop, discount, content, duration, timetamp);
+//            //sending message
+//            for (int i = 0; i < tlimit; i++)
+//                this.sendMessage(jsonMessage.getJSONMessage().toString(), mChatServiceArray[i]);
         }catch (Exception e){
             e.printStackTrace();
         }
     }
+
     /**
      * Sends a given message to the given bluetooth service
      *

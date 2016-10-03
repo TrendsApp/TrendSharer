@@ -38,7 +38,7 @@ public class DatabaseHandler {
         dealsTableName = tableName;
         String createTableQuery = "CREATE TABLE IF NOT EXISTS "+dealsTableName+" (ID integer primary key AUTOINCREMENT,Shop VARCHAR,Discount VARCHAR,Content VARCHAR,Duration INTEGER,Photo BLOB,Timestamp DATETIME DEFAULT CURRENT_TIMESTAMP);";
         hotDealsDataBase.execSQL(createTableQuery);
-        timerToClearDB(18000); //Timer has been set to 5 minutes
+        timerToClearDB(420000); //Timer has been set to 5 minutes
     }
 
     public static DatabaseHandler getInstance(String databaseName,String tableName,Activity activity) {
