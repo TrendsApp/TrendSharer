@@ -1,6 +1,7 @@
 package trendsapps.org.trendsharer.fragments;
 
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
@@ -8,12 +9,9 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.os.Handler;
 
 import java.util.ArrayList;
-//import java.util.logging.Handler;
-import java.util.logging.LogRecord;
 
 import trendsapps.org.trendsharer.DatabaseHandler;
 import trendsapps.org.trendsharer.Model.HotDeal;
@@ -60,8 +58,6 @@ public class HotDealsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_hot_deals, container, false);
-//            TextView textView = (TextView) rootView.findViewById(R.id.section_label);
-//            textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
         recyclerView = (RecyclerView) rootView.findViewById(R.id.my_recycler_view);
         recyclerView.setHasFixedSize(false);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -74,19 +70,7 @@ public class HotDealsFragment extends Fragment {
                                                          mSwipeRefreshLayout.setRefreshing(false);
                                                      }
                                                  });
-//
-//        mSwipeRefreshLayout.OnRefreshListener(new SwipeRefreshLayout.OnRefreshListener(){
-//
-//            @Override
-//            public void onRefresh() {
-//                updateList();
-//                mSwipeRefreshLayout.setRefreshing(false);
-//            }
-//        });
-
-        //String has to be replaced with HotDeal object.
-
-
+       refreshDealsAutomatically();
         handler.postDelayed(runnable, 500);
         return rootView;
 
@@ -94,6 +78,21 @@ public class HotDealsFragment extends Fragment {
 
     }
 
+    private void refreshDealsAutomatically(){
+        new CountDownTimer(60000, 1000) {
+
+            @Override
+            public void onTick(long l) {
+
+            }
+
+            @Override
+            public void onFinish() {
+                updateList();
+                refreshDealsAutomatically();
+            }
+        }.start();
+    }
     public void onResume(){
         super.onResume();
         handler.postDelayed(runnable, 500);
