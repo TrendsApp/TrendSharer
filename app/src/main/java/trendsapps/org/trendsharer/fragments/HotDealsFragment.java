@@ -79,7 +79,7 @@ public class HotDealsFragment extends Fragment {
     }
 
     private void refreshDealsAutomatically(){
-        new CountDownTimer(120000, 1000) {
+        new CountDownTimer(60000, 1000) {
 
             @Override
             public void onTick(long l) {
