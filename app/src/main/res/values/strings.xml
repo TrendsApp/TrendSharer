@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">TrendSharer</string>
-    <string name="action_settings">Settings</string>
+    <string name="action_settings">Send deals</string>
     <string name="section_format">TredSharer Fragment: %1$d</string>
     <string name="hint_shopName">Name of the shop</string>
     <string name="hint_discount">Discount</string>
