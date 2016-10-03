@@ -1,6 +1,7 @@
 package trendsapps.org.trendsharer.fragments;
 
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
@@ -74,19 +75,7 @@ public class HotDealsFragment extends Fragment {
                                                          mSwipeRefreshLayout.setRefreshing(false);
                                                      }
                                                  });
-//
-//        mSwipeRefreshLayout.OnRefreshListener(new SwipeRefreshLayout.OnRefreshListener(){
-//
-//            @Override
-//            public void onRefresh() {
-//                updateList();
-//                mSwipeRefreshLayout.setRefreshing(false);
-//            }
-//        });
-
-        //String has to be replaced with HotDeal object.
-
-
+       refreshDealsAutomatically();
         handler.postDelayed(runnable, 500);
         return rootView;
 
@@ -94,6 +83,21 @@ public class HotDealsFragment extends Fragment {
 
     }
 
+    private void refreshDealsAutomatically(){
+        new CountDownTimer(120000, 1000) {
+
+            @Override
+            public void onTick(long l) {
+
+            }
+
+            @Override
+            public void onFinish() {
+                updateList();
+                refreshDealsAutomatically();
+            }
+        }.start();
+    }
     public void onResume(){
         super.onResume();
         handler.postDelayed(runnable, 500);
