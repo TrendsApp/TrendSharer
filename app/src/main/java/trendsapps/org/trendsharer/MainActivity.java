@@ -79,6 +79,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     private BluetoothService[] mChatServiceArray;
+    DatabaseHandler handler;
 
 
 
@@ -231,7 +232,7 @@ public class MainActivity extends AppCompatActivity {
             deal.setStoredDate(new Timestamp(Long.parseLong(timetamp)));
             deal.setContent(content);
             deal.setDuration(duration);
-            DatabaseHandler handler = DatabaseHandler.getInstance(DatabaseHandler.DATABSENAME, "HotDeals", getActivity());
+            handler = DatabaseHandler.getInstance(DatabaseHandler.DATABSENAME, "HotDeals", getActivity());
             handler.addDeal(deal);
         }catch(Exception e){
             e.printStackTrace();
@@ -346,12 +347,12 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 String message = receivedMessage;
-                Snackbar.make(view, "Latest hot deal is: "+message, Snackbar.LENGTH_LONG)
+                Snackbar.make(view, handler.getLatestDeal(), Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
         });
 
-
+        handler = DatabaseHandler.getInstance(DatabaseHandler.DATABSENAME, "HotDeals", getActivity());
         startBluetoothService();
 
 

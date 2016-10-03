@@ -25,6 +25,7 @@ public class DatabaseHandler {
       this.hotDealsDataBase = database;
     }
     private static DatabaseHandler instance = null;
+    private String latestDeal = "Sorry, no deals has been added :(";
 
     private DatabaseHandler(String databaseName,String tableName,Activity activity){
         try {
@@ -57,6 +58,7 @@ public class DatabaseHandler {
         contentValues.put("Timestamp", String.valueOf(newDeal.getStoredDate()));
         hotDealsDataBase.insert(dealsTableName,null,contentValues);
         newDealAdded = true;
+        latestDeal = newDeal.getDiscount() +" from " + newDeal.getShopName();
 
     }
     /*
@@ -129,5 +131,9 @@ public class DatabaseHandler {
                 timerToClearDB(timerInSeconds);
             }
         }.start();
+    }
+
+    public String getLatestDeal(){
+        return latestDeal;
     }
 }
